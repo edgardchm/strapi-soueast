@@ -1,0 +1,24 @@
+{
+  "name": "soueast-cms",
+  "private": true,
+  "version": "0.1.0",
+  "description": "SOUEAST Chile — Strapi headless CMS",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi",
+    "seed:assets": "node scripts/seed-assets.js"
+  },
+  "dependencies": {
+    "@strapi/strapi": "4.25.9",
+    "@strapi/plugin-users-permissions": "4.25.9",
+    "@strapi/plugin-i18n": "4.25.9",
+    "better-sqlite3": "9.4.3"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=20.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
