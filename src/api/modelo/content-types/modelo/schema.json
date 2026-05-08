@@ -78,6 +78,41 @@
       "type": "component",
       "repeatable": true,
       "component": "modelo.feature"
+    },
+    "nav_label": {
+      "type": "string"
+    },
+    "descripcion_lead": {
+      "type": "text"
+    },
+    "hero_cta_primary_label": {
+      "type": "string"
+    },
+    "hero_cta_primary_href": {
+      "type": "string"
+    },
+    "hero_cta_secondary_label": {
+      "type": "string"
+    },
+    "hero_cta_secondary_href": {
+      "type": "string"
+    },
+    "news_imagen_lateral": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "news_tag": {
+      "type": "string"
+    },
+    "page_url": {
+      "type": "string"
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
     }
   }
 }

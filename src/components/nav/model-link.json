@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_nav_model_links",
+  "info": {
+    "displayName": "Nav Model Link",
+    "description": "Item del navbar que apunta a una p\u00e1gina de modelo",
+    "icon": "car"
+  },
+  "options": {},
+  "attributes": {
+    "label_override": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "modelo": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::modelo.modelo"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "kind": "singleType",
+  "collectionName": "cotizador_pages",
+  "info": {
+    "singularName": "cotizador-page",
+    "pluralName": "cotizador-pages",
+    "displayName": "Cotizador Page",
+    "description": "Copy y configuraci\u00f3n del cotizador independiente"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hero_title": {
+      "type": "string",
+      "default": "Cotizador"
+    },
+    "intro_eyebrow": {
+      "type": "string",
+      "default": "Solicita"
+    },
+    "intro_title": {
+      "type": "string",
+      "default": "Cotiza tu SOUEAST"
+    },
+    "intro_lead": {
+      "type": "text",
+      "default": "Te contactaremos en menos de 24 horas con una propuesta personalizada y la sucursal m\u00e1s cercana."
+    },
+    "form_subtitle": {
+      "type": "text",
+      "default": "Completa el formulario y nos pondremos en contacto contigo"
+    },
+    "form_fields": {
+      "type": "json"
+    },
+    "form_messages": {
+      "type": "json"
+    },
+    "modelos_form": {
+      "type": "json"
+    },
+    "versiones_form": {
+      "type": "json"
+    },
+    "submit_label": {
+      "type": "string",
+      "default": "SOLICITAR COTIZACI\u00d3N"
+    },
+    "submitting_label": {
+      "type": "string",
+      "default": "ENVIANDO\u2026"
+    },
+    "mensaje_exito": {
+      "type": "richtext"
+    },
+    "mensaje_error": {
+      "type": "richtext"
+    },
+    "privacidad_label_html": {
+      "type": "richtext"
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

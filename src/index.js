@@ -1,13 +1,11 @@
 'use strict';
 
 // Bootstrap automático:
-//   1. Habilita find/findOne públicos para modelo, sucursal, footer.
-//   2. Si la base está vacía, carga el seed (3 modelos, 3 sucursales, footer).
-//
-// Idempotente: detecta si ya hay datos y no duplica.
+//   1. Habilita find/findOne públicos para todos los content types editables.
+//   2. Si la base está vacía, carga seed completo (sin assets — esos se suben con
+//      `npm run seed:assets`). Idempotente: detecta si ya hay datos y no duplica.
 
-// Defaults compartidos por los 3 modelos para no duplicar.
-// Cuando el contenido definitivo esté listo, se editan desde el panel.
+// ─── Defaults compartidos por modelos ─────────────────────────────────────
 const DEFAULT_VERSIONES = [
   { nombre: '1.5T-6DCT' },
   { nombre: '1.5T-6DCT Lite' },
@@ -34,10 +32,7 @@ const DEFAULT_SEGURIDAD = [
 const DEFAULT_PRECIO_LEGAL =
   '*Precio referencial. Sujeto a stock y condiciones del mercado. No incluye derechos de inscripción.';
 
-// ── Datos reales por modelo (sin imágenes — esas se cargan luego desde Admin
-// o vía script `npm run seed:assets`). Cuando se suban, los Media IDs quedan
-// poblados en imagen_principal, imagen_lateral, galeria[].imagen, colores[].imagen_aerea/lateral.
-
+// ─── Datos por modelo ─────────────────────────────────────────────────────
 const S09_COLORES = [
   { name: 'Verde Aurora', hex: '#3F5C4A', tipo: 'Exterior' },
   { name: 'Negro Estrellado', hex: '#1A1A1A', tipo: 'Exterior' },
@@ -81,7 +76,11 @@ const SEED_MODELOS = [
     slug: 's09', nombre: 'S09', tagline: 'SUV insignia', categoria: 'SUV',
     precio_desde: 18990000, destacado: true, orden: 1,
     descripcion: 'El SUV más completo de SOUEAST. Espacio, tecnología y eficiencia.',
+    descripcion_lead: 'Tecnología, espacio y eficiencia para los viajes más exigentes.',
     precio_legal: DEFAULT_PRECIO_LEGAL,
+    nav_label: 'S09',
+    page_url: 'modelo-s09.html',
+    news_tag: 'Próximamente',
     versiones: DEFAULT_VERSIONES,
     colores: S09_COLORES,
     galeria: S09_GALERIA,
@@ -91,7 +90,11 @@ const SEED_MODELOS = [
     slug: 's07', nombre: 'S07', tagline: 'SUV familiar', categoria: 'SUV',
     precio_desde: 16990000, destacado: true, orden: 2,
     descripcion: 'Diseño moderno y equipamiento generoso para toda la familia.',
+    descripcion_lead: 'El SUV mediano con autonomía extendida y asistencias inteligentes.',
     precio_legal: DEFAULT_PRECIO_LEGAL,
+    nav_label: 'S07',
+    page_url: 'modelo-s07.html',
+    news_tag: 'Lanzamiento',
     versiones: DEFAULT_VERSIONES,
     colores: DEFAULT_COLORES,
     galeria: DEFAULT_GALERIA,
@@ -101,7 +104,11 @@ const SEED_MODELOS = [
     slug: 's06', nombre: 'S06', tagline: 'SUV compacto', categoria: 'SUV',
     precio_desde: 14990000, destacado: true, orden: 3,
     descripcion: 'Compacto, ágil y con la tecnología que esperas.',
+    descripcion_lead: 'Diseño moderno, eficiencia y tecnología en un SUV compacto urbano.',
     precio_legal: DEFAULT_PRECIO_LEGAL,
+    nav_label: 'S06',
+    page_url: 'modelo-s06.html',
+    news_tag: 'Lanzamiento',
     versiones: DEFAULT_VERSIONES,
     colores: DEFAULT_COLORES,
     galeria: DEFAULT_GALERIA,
@@ -111,7 +118,11 @@ const SEED_MODELOS = [
     slug: 's06-phev', nombre: 'S06 PHEV', tagline: 'SUV híbrido enchufable', categoria: 'Híbrido',
     precio_desde: 19990000, destacado: true, orden: 4,
     descripcion: 'SUV híbrido enchufable con gran autonomía, bajo consumo y tecnología inteligente.',
+    descripcion_lead: 'Híbrido enchufable con hasta 80 km de autonomía eléctrica pura.',
     precio_legal: DEFAULT_PRECIO_LEGAL,
+    nav_label: 'S06 PHEV',
+    page_url: 'modelo-s06-phev.html',
+    news_tag: 'Híbrido enchufable',
     versiones: DEFAULT_VERSIONES,
     colores: S06PHEV_COLORES,
     galeria: S06PHEV_GALERIA,
@@ -127,6 +138,7 @@ const SEED_SUCURSALES = [
     horario: 'Lunes a Viernes 9:00 a 19:00',
     tipo_label: 'Sala de ventas',
     servicios: ['ventas', 'repuestos'],
+    orden: 1,
   },
   {
     nombre: 'SHOWROOM MOVICENTER', direccion: 'Av. Américo Vespucio 1501, Quilicura',
@@ -135,6 +147,7 @@ const SEED_SUCURSALES = [
     horario: 'Lunes a Domingo 10:00 a 20:00',
     tipo_label: 'Showroom Exclusivo',
     servicios: ['ventas', 'repuestos', 'servicio'],
+    orden: 2,
   },
   {
     nombre: 'SUCURSAL CONCEPCIÓN', direccion: "Av. O'Higgins 789",
@@ -143,25 +156,302 @@ const SEED_SUCURSALES = [
     horario: 'Lunes a Viernes 9:00 a 19:00',
     tipo_label: 'Sala de ventas',
     servicios: ['ventas', 'repuestos', 'servicio'],
+    orden: 3,
   },
 ];
 
+// ─── Footer (estructurado con components tipados) ─────────────────────────
 const SEED_FOOTER = {
-  copyright: '© 2025 SOUEAST Chile',
-  legales: 'Las imágenes son referenciales. Precios sujetos a stock.',
+  copyright: '© 2025 SOUEAST Chile · Andes Motor',
+  legales: 'Las imágenes son referenciales. Precios sujetos a stock y condiciones del mercado.',
+  back_to_top_label: 'VOLVER ARRIBA',
+  modelos_titulo: 'Modelos',
+  secondary_titulo: 'Más',
+  social_titulo: 'Síguenos',
+  tagline_eyebrow: { ease: 'EASE', your: 'YOUR', life: 'LIFE' },
+  modelos_links: [
+    { label: 'S06', href: 'modelo-s06.html' },
+    { label: 'S06 PHEV', href: 'modelo-s06-phev.html' },
+    { label: 'S07', href: 'modelo-s07.html' },
+    { label: 'S09', href: 'modelo-s09.html' },
+  ],
+  secondary_links: [
+    { label: 'Noticias', href: 'noticias.html' },
+    { label: 'Legales', href: '#legales' },
+    { label: 'Políticas de privacidad', href: '#privacidad' },
+    { label: 'Contáctanos', href: 'contacto.html' },
+  ],
+  social: [
+    { red: 'instagram', url: 'https://www.instagram.com/popular/soueast-chile/', aria_label: 'Instagram' },
+    { red: 'facebook',  url: 'https://www.facebook.com/profile.php?id=61583520998515', aria_label: 'Facebook' },
+    { red: 'tiktok',    url: 'https://www.tiktok.com/@soueast.chile?_r=1&_t=ZM-92HJTyvz3jn', aria_label: 'TikTok' },
+    { red: 'youtube',   url: 'https://www.youtube.com/@SoueastChile', aria_label: 'YouTube' },
+  ],
+  // Mantenemos el JSON legacy por compatibilidad
   columnas: [
     { titulo: 'Modelos', links: [
-      { label: 'S09', href: '/modelos/s09' },
-      { label: 'S07', href: '/modelos/s07' },
-      { label: 'S06', href: '/modelos/s06' },
+      { label: 'S06', href: 'modelo-s06.html' },
+      { label: 'S06 PHEV', href: 'modelo-s06-phev.html' },
+      { label: 'S07', href: 'modelo-s07.html' },
+      { label: 'S09', href: 'modelo-s09.html' },
     ]},
-    { titulo: 'Empresa', links: [
-      { label: 'Sucursales', href: '/sucursales' },
-      { label: 'Servicio', href: '/servicio' },
+    { titulo: 'Más', links: [
+      { label: 'Noticias', href: 'noticias.html' },
+      { label: 'Sucursales', href: 'sucursales.html' },
+      { label: 'Contáctanos', href: 'contacto.html' },
     ]},
   ],
 };
 
+// ─── Global ───────────────────────────────────────────────────────────────
+const SEED_GLOBAL = {
+  brand_name: 'SOUEAST Chile',
+  tagline_eyebrow: { ease: 'EASE', your: 'YOUR', life: 'LIFE' },
+  nav_models: [
+    { label_override: 'S06', href: 'modelo-s06.html' },
+    { label_override: 'S06 PHEV', href: 'modelo-s06-phev.html' },
+    { label_override: 'S07', href: 'modelo-s07.html' },
+    { label_override: 'S09', href: 'modelo-s09.html' },
+  ],
+  nav_cotizar_label: 'Cotizar',
+  nav_sucursales_label: 'Sucursales',
+  nav_cta_external_url: 'https://andesmotor.in-touch.cl/agenda/jetour/',
+  whatsapp_phone: '56912345678',
+  whatsapp_brand_name: 'Andes Retail',
+  whatsapp_subtitle: '¡Encuentra el vehículo perfecto para lo que necesitas!',
+  whatsapp_bubble_text: '¿Quieres cotizar, agendar o necesitas recomendaciones? Escríbeme.',
+  whatsapp_button_label: '¡Hablemos!',
+  whatsapp_credit_html: '<em>desarollado por</em> <span>adereso</span>',
+  default_cotizar_modelo: 'S06',
+  default_seo: {
+    meta_title: 'SOUEAST Chile',
+    meta_description: 'SUV de última generación para Chile. Conoce los modelos S06, S06 PHEV, S07 y S09.',
+  },
+};
+
+// ─── Home Page ────────────────────────────────────────────────────────────
+const SEED_HOME = {
+  hero_eyebrow: { ease: 'EASE', your: 'YOUR', life: 'LIFE' },
+  hero_title: 'Bienvenidos a SOUEAST Chile',
+  hero_cta_label: 'CONOCE MÁS',
+  hero_cta_href: 'modelo-s06.html',
+  modelos_section_title: 'Modelos',
+  modelos_default_tag: 'Lanzamiento',
+  noticias_section_title: 'Noticias',
+  noticias_ver_todas_label: 'VER TODAS',
+  quehacer_items: [
+    { label: 'Elige tu SOUEAST', icon: 'se', href: '#modelos', primary: true },
+    { label: 'Encuentra tu Sucursal', icon: 'pin', href: 'sucursales.html', primary: false },
+    { label: 'Cotiza tu SOUEAST', icon: 'doc', href: 'cotizador.html', primary: false },
+  ],
+  seo: {
+    meta_title: 'SOUEAST Chile — SUV de última generación',
+    meta_description: 'Conoce los SUV S06, S06 PHEV, S07 y S09 de SOUEAST en Chile. Cotiza online y encuentra tu sucursal.',
+  },
+};
+
+// ─── Noticias Page ────────────────────────────────────────────────────────
+const SEED_NOTICIAS_PAGE = {
+  hero_eyebrow_label: 'Últimas noticias',
+  hero_title: 'Noticias',
+  categorias: ['Todos', 'Marca', 'Modelos', 'Lanzamientos', 'Tecnología'],
+  empty_state_text: 'No hay noticias en esta categoría por el momento.',
+  seo: {
+    meta_title: 'Noticias SOUEAST Chile',
+    meta_description: 'Últimas novedades, lanzamientos y eventos de SOUEAST Chile.',
+  },
+};
+
+// ─── Contacto Page ────────────────────────────────────────────────────────
+const SEED_CONTACTO_PAGE = {
+  hero_title: 'Contacto',
+  nav_cotizar_label: 'Cotizar',
+  nav_cotizar_href: 'cotizador.html',
+  nav_sucursales_label: 'Sucursales',
+  nav_sucursales_href: 'sucursales.html',
+  tipos_solicitud: [
+    'Consulta general',
+    'Cotización',
+    'Post venta',
+    'Servicio técnico',
+    'Garantía',
+    'Repuestos',
+    'Financiamiento',
+    'Test drive',
+  ],
+  areas: [
+    'Ventas',
+    'Post venta',
+    'Servicio técnico',
+    'Repuestos',
+    'Administración',
+    'Otro',
+  ],
+  modelos_form: ['S06', 'S06 PHEV', 'S07', 'S09'],
+  privacidad_label_html:
+    'Acepto expresamente las <a href="#privacidad" style="color: var(--color-primary); text-decoration: underline">políticas de privacidad</a> de Andes Motor.',
+  mensaje_exito_titulo: '¡Gracias por contactarnos!',
+  mensaje_exito_texto: 'Hemos recibido tu solicitud y nos pondremos en contacto contigo a la brevedad.',
+  mensaje_exito_cta_label: 'Enviar otra consulta',
+  seo: {
+    meta_title: 'Contacto · SOUEAST Chile',
+    meta_description: 'Contáctanos para cotizar, agendar test drive o consultas de post-venta.',
+  },
+};
+
+// ─── Cotizador Page ───────────────────────────────────────────────────────
+const SEED_COTIZADOR_PAGE = {
+  hero_title: 'Cotizador',
+  intro_eyebrow: 'Solicita',
+  intro_title: 'Cotiza tu SOUEAST',
+  intro_lead: 'Te contactaremos en menos de 24 horas con una propuesta personalizada y la sucursal más cercana.',
+  form_subtitle: 'Completa el formulario y nos pondremos en contacto contigo',
+  form_fields: {
+    modelo: { label: 'Modelo', placeholder: 'Modelo' },
+    version: { label: 'Versión', placeholder: 'Seleccione una versión', empty_help: 'No hay versiones disponibles para este modelo' },
+    nombre: { label: 'Nombre', placeholder: 'Nombre' },
+    apellido: { label: 'Apellido', placeholder: 'Apellido' },
+    rut: { label: 'Rut', placeholder: 'sin puntos y con guión' },
+    email: { label: 'E-mail', placeholder: 'ejemplo@correo.cl' },
+    telefono: { label: 'Teléfono', placeholder: '912345678' },
+    comuna: { label: 'Comuna', placeholder: 'Selecciona una comuna' },
+    sucursal: { label: 'Sucursal', placeholder: 'Selecciona una sucursal', empty_help: 'No hay sucursales disponibles en esta comuna' },
+  },
+  form_messages: {
+    nombre_required: 'El nombre es requerido',
+    apellido_required: 'El apellido es requerido',
+    rut_required: 'El RUT es requerido',
+    rut_invalid: 'El RUT no es válido',
+    email_required: 'El email es requerido',
+    email_invalid: 'El email no es válido',
+    telefono_required: 'El teléfono es requerido',
+    telefono_invalid: 'El teléfono debe tener exactamente 9 dígitos',
+    comuna_required: 'Selecciona una comuna',
+    sucursal_required: 'Selecciona una sucursal',
+    modelo_required: 'Selecciona un modelo',
+    version_required: 'Selecciona una versión',
+    privacidad_required: 'Debes aceptar las políticas de privacidad',
+  },
+  modelos_form: ['S06', 'S06 PHEV', 'S07', 'S09'],
+  versiones_form: {
+    S06: [
+      { codigo: 'S06_15T_6DCT_LUX', nombre: '1.5T 6DCT LUX' },
+      { codigo: 'S06_16T_7DCT_LUX', nombre: '1.6T 7DCT LUX' },
+      { codigo: 'S06_16T_7DCT_LIMITED', nombre: '1.6T 7DCT LIMITED' },
+    ],
+    'S06 PHEV': [{ codigo: 'S06PHEV_LIMITED', nombre: 'S06 PHEV LIMITED' }],
+    S07: [
+      { codigo: 'S07_15T_6DCT', nombre: '1.5T 6DCT' },
+      { codigo: 'S07_16T_7DCT', nombre: '1.6T 7DCT' },
+    ],
+    S09: [{ codigo: 'S09_20T_7DCT', nombre: '2.0T 7DCT' }],
+  },
+  submit_label: 'SOLICITAR COTIZACIÓN',
+  submitting_label: 'ENVIANDO…',
+  mensaje_exito: '¡Cotización enviada! Recibirás respuesta en menos de 24 horas.',
+  mensaje_error: 'No pudimos enviar tu cotización. Inténtalo nuevamente o contáctanos directamente.',
+  privacidad_label_html:
+    'Acepto las <a href="#privacidad">políticas de privacidad</a> de Andes Motor.',
+  seo: {
+    meta_title: 'Cotizador · SOUEAST Chile',
+    meta_description: 'Cotiza tu SOUEAST en línea y recibe una propuesta personalizada en 24 horas.',
+  },
+};
+
+// ─── Gracias Page ─────────────────────────────────────────────────────────
+const SEED_GRACIAS_PAGE = {
+  title: '¡Gracias!',
+  mensaje:
+    '<p>Hemos recibido tu solicitud. Un ejecutivo se contactará contigo a la brevedad.</p>',
+  cta_label: 'Volver al inicio',
+  cta_href: 'home.html',
+  seo: {
+    meta_title: 'Gracias · SOUEAST Chile',
+    no_index: true,
+  },
+};
+
+// ─── Noticias (collection) ────────────────────────────────────────────────
+const SEED_NOTICIAS = [
+  {
+    slug: 'soueast-showroom-movicenter',
+    titulo: 'Soueast avanza a paso agigantado: Inauguró showroom exclusivo en Movicenter',
+    categoria: 'Marca',
+    fecha: '2026-01-05',
+    fecha_label: '5 ENERO, 2026',
+    tag_variant: 'red',
+    destacado_home: true,
+    orden_home: 1,
+    resumen:
+      'La marca china de automóviles abrió las puertas de su primer showroom exclusivo en Movicenter, consolidando su presencia en el mercado automotriz chileno con una propuesta premium.',
+    cta_label: 'LEER MÁS',
+    cta_href: '#',
+  },
+  {
+    slug: 'soueast-nueva-marca-mercado-chileno',
+    titulo: 'Soueast: la nueva marca oriental que irrumpe en el mercado automotriz chileno',
+    categoria: 'Marca',
+    fecha: '2025-12-20',
+    fecha_label: '20 DICIEMBRE, 2025',
+    tag_variant: 'red',
+    destacado_home: true,
+    orden_home: 2,
+    resumen:
+      'Con modelos SUV de última generación y tecnología de vanguardia, Soueast llega a Chile de la mano de Andes Motor para transformar la experiencia de conducción.',
+    cta_label: 'LEER MÁS',
+    cta_href: '#',
+  },
+  {
+    slug: 'soueast-s06-mejor-suv-2025',
+    titulo: 'El SOUEAST S06 es elegido entre los mejores SUV del año por revista AutoChile',
+    categoria: 'Modelos',
+    fecha: '2025-12-10',
+    fecha_label: '10 DICIEMBRE, 2025',
+    tag_variant: 'red',
+    destacado_home: false,
+    orden_home: 3,
+    resumen:
+      'La reconocida publicación automotriz destacó al S06 por su diseño vanguardista, eficiencia de combustible y equipamiento de seguridad activa como los diferenciadores clave.',
+  },
+  {
+    slug: 'soueast-s07-lanzamiento-oficial',
+    titulo: 'Lanzamiento oficial del SOUEAST S07 en Chile: precios, versiones y equipamiento',
+    categoria: 'Lanzamientos',
+    fecha: '2025-11-28',
+    fecha_label: '28 NOVIEMBRE, 2025',
+    tag_variant: 'red',
+    destacado_home: false,
+    orden_home: 4,
+    resumen:
+      'Andes Motor presentó oficialmente el S07, el SUV mediano que promete redefinir la categoría con su autonomía eléctrica extendida y tecnología de asistencia al conductor.',
+  },
+  {
+    slug: 'soueast-red-sucursales-expansion',
+    titulo: 'Soueast Chile expande su red de concesionarios a regiones del norte y sur del país',
+    categoria: 'Marca',
+    fecha: '2025-11-14',
+    fecha_label: '14 NOVIEMBRE, 2025',
+    tag_variant: 'red',
+    destacado_home: false,
+    orden_home: 5,
+    resumen:
+      'La marca amplía su cobertura con nuevos puntos de venta en Antofagasta, Concepción y Puerto Montt, acercando la experiencia Soueast a más clientes en todo Chile.',
+  },
+  {
+    slug: 'soueast-s06-phev-tecnologia',
+    titulo: '¿Cómo funciona la tecnología PHEV del SOUEAST S06? Todo lo que necesitas saber',
+    categoria: 'Tecnologia',
+    fecha: '2025-11-01',
+    fecha_label: '1 NOVIEMBRE, 2025',
+    tag_variant: 'red',
+    destacado_home: false,
+    orden_home: 6,
+    resumen:
+      'El sistema híbrido enchufable del S06 PHEV combina un motor de combustión con un motor eléctrico para ofrecer hasta 80 km de autonomía eléctrica pura y bajo consumo en ruta.',
+  },
+];
+
+// ─── Permisos ─────────────────────────────────────────────────────────────
 async function setPublicPermissions(strapi, actions) {
   const publicRole = await strapi
     .query('plugin::users-permissions.role')
@@ -190,45 +480,68 @@ async function setPublicPermissions(strapi, actions) {
   strapi.log.info('[bootstrap] permisos public configurados');
 }
 
+// ─── Helpers de seed idempotente ──────────────────────────────────────────
+async function ensureSingle(strapi, uid, data, label) {
+  const existing = await strapi.entityService.findMany(uid);
+  if (existing) {
+    const missing = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (existing[key] === undefined || existing[key] === null) {
+        missing[key] = value;
+      }
+    }
+    if (Object.keys(missing).length > 0) {
+      await strapi.entityService.update(uid, existing.id, { data: missing });
+      strapi.log.info(`[bootstrap] seed ${label}: campos nuevos completados`);
+    }
+    return;
+  }
+  await strapi.entityService.create(uid, { data: { ...data, publishedAt: new Date() } });
+  strapi.log.info(`[bootstrap] seed ${label}`);
+}
+
+async function ensureCollection(strapi, uid, items, label) {
+  const count = await strapi.entityService.count(uid);
+  if (count > 0) return;
+  for (const data of items) {
+    await strapi.entityService.create(uid, { data: { ...data, publishedAt: new Date() } });
+  }
+  strapi.log.info(`[bootstrap] seed ${label}: ${items.length}`);
+}
+
 async function seedIfEmpty(strapi) {
-  const modeloCount = await strapi.entityService.count('api::modelo.modelo');
-  if (modeloCount === 0) {
-    for (const data of SEED_MODELOS) {
-      await strapi.entityService.create('api::modelo.modelo', {
-        data: { ...data, publishedAt: new Date() },
-      });
-    }
-    strapi.log.info(`[bootstrap] seed modelos: ${SEED_MODELOS.length}`);
-  }
+  await ensureCollection(strapi, 'api::modelo.modelo', SEED_MODELOS, 'modelos');
+  await ensureCollection(strapi, 'api::sucursal.sucursal', SEED_SUCURSALES, 'sucursales');
+  await ensureCollection(strapi, 'api::noticia.noticia', SEED_NOTICIAS, 'noticias');
 
-  const sucursalCount = await strapi.entityService.count('api::sucursal.sucursal');
-  if (sucursalCount === 0) {
-    for (const data of SEED_SUCURSALES) {
-      await strapi.entityService.create('api::sucursal.sucursal', {
-        data: { ...data, publishedAt: new Date() },
-      });
-    }
-    strapi.log.info(`[bootstrap] seed sucursales: ${SEED_SUCURSALES.length}`);
-  }
-
-  const footer = await strapi.entityService.findMany('api::footer.footer');
-  if (!footer) {
-    await strapi.entityService.create('api::footer.footer', {
-      data: { ...SEED_FOOTER, publishedAt: new Date() },
-    });
-    strapi.log.info('[bootstrap] seed footer');
-  }
+  await ensureSingle(strapi, 'api::footer.footer', SEED_FOOTER, 'footer');
+  await ensureSingle(strapi, 'api::global.global', SEED_GLOBAL, 'global');
+  await ensureSingle(strapi, 'api::home-page.home-page', SEED_HOME, 'home-page');
+  await ensureSingle(strapi, 'api::noticias-page.noticias-page', SEED_NOTICIAS_PAGE, 'noticias-page');
+  await ensureSingle(strapi, 'api::contacto-page.contacto-page', SEED_CONTACTO_PAGE, 'contacto-page');
+  await ensureSingle(strapi, 'api::cotizador-page.cotizador-page', SEED_COTIZADOR_PAGE, 'cotizador-page');
+  await ensureSingle(strapi, 'api::gracias-page.gracias-page', SEED_GRACIAS_PAGE, 'gracias-page');
 }
 
 module.exports = {
   register() {},
   async bootstrap({ strapi }) {
     await setPublicPermissions(strapi, [
+      // Existentes
       'api::modelo.modelo.find',
       'api::modelo.modelo.findOne',
       'api::sucursal.sucursal.find',
       'api::sucursal.sucursal.findOne',
       'api::footer.footer.find',
+      // Nuevos
+      'api::global.global.find',
+      'api::home-page.home-page.find',
+      'api::noticias-page.noticias-page.find',
+      'api::contacto-page.contacto-page.find',
+      'api::cotizador-page.cotizador-page.find',
+      'api::gracias-page.gracias-page.find',
+      'api::noticia.noticia.find',
+      'api::noticia.noticia.findOne',
     ]);
     await seedIfEmpty(strapi);
   },

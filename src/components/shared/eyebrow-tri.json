@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_eyebrow_tris",
+  "info": {
+    "displayName": "Eyebrow Tri",
+    "description": "Eyebrow tipo EASE YOUR LIFE — tres tramos con colores distintos",
+    "icon": "text"
+  },
+  "options": {},
+  "attributes": {
+    "ease": {
+      "type": "string",
+      "default": "EASE",
+      "required": true
+    },
+    "your": {
+      "type": "string",
+      "default": "YOUR",
+      "required": true
+    },
+    "life": {
+      "type": "string",
+      "default": "LIFE",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_home_action_cards",
+  "info": {
+    "displayName": "Action Card",
+    "description": "Tarjeta de acci\u00f3n para la secci\u00f3n \"Qu\u00e9 hacer\" (home)",
+    "icon": "hand-pointer"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": ["se", "pin", "doc", "wrench", "car"],
+      "default": "se"
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "primary": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

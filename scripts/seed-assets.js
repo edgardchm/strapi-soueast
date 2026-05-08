@@ -39,6 +39,46 @@ const ASSETS_ROOT = path.resolve(__dirname, '..', '..', 'assets');
 // corresponden 1:1 con lo que copiamos en assets/sXX/. Si algún archivo no
 // existe, el slot queda vacío (no rompe).
 const PLAN = {
+  's06': {
+    folder: '.',
+    imagen_principal: 'modelo-hero.jpg',
+    imagen_lateral: 'modelo-side.jpg',
+    galeria: [
+      { feat: 'Galería destacada', file: 'modelo-gallery.jpg' },
+    ],
+    colores: [
+      { name: 'Exterior',  aerea: 'modelo-color-exterior.jpg', lateral: 's06-lateral.webp' },
+      { name: 'Interior',  aerea: 'modelo-color-interior.jpg', lateral: 's06-lateral.webp' },
+    ],
+    seguridad: [
+      { feat: 'Pack de Seguridad', file: 'seguridad.jpg' },
+    ],
+  },
+  's07': {
+    folder: 's07',
+    imagen_principal: 'banner-desktop.webp',
+    imagen_lateral: 'descripcion.webp',
+    galeria: [
+      { feat: 'Pantalla central', file: 'caracteristica-pantalla.webp' },
+      { feat: 'Espacio interior', file: 'caracteristica-espacio.webp' },
+      { feat: 'Climatización inteligente', file: 'caracteristica-climatizado.webp' },
+      { feat: 'Cargador inalámbrico', file: 'caracteristica-cargador.webp' },
+    ],
+    colores: [
+      { name: 'Ocean Blue',    aerea: 'exterior-oceanblue-aereo.webp',    lateral: 'exterior-oceanblue-lateral.webp' },
+      { name: 'Pearl White',   aerea: 'exterior-pearlwhite-aereo.webp',   lateral: 'exterior-pearlwhite-lateral.webp' },
+      { name: 'Phantom Gray',  aerea: 'exterior-phantomgray-aereo.webp',  lateral: 'exterior-phantomgray-lateral.webp' },
+      { name: 'Sky Blue',      aerea: 'exterior-skyblue-aereo.webp',      lateral: 'exterior-skyblue-lateral.webp' },
+      { name: 'Snow White',    aerea: 'exterior-snowwhite-aereo.webp',    lateral: 'exterior-snowwhite-lateral.webp' },
+      { name: 'Starlit Black', aerea: 'exterior-starlitblack-aereo.webp', lateral: 'exterior-starlitblack-lateral.webp' },
+    ],
+    seguridad: [
+      { feat: 'EBA — Asistente de Frenado de Emergencia', file: 'seguridad-eba.webp' },
+      { feat: 'ESP — Programa Electrónico de Estabilidad', file: 'seguridad-esp.webp' },
+      { feat: 'FCW — Advertencia de Colisión Frontal', file: 'seguridad-fcw.webp' },
+      { feat: 'TCS — Control de Tracción', file: 'seguridad-tcs.webp' },
+    ],
+  },
   's09': {
     folder: 's09',
     imagen_principal: 'banner-desktop.webp',
@@ -77,14 +117,19 @@ const PLAN = {
       { feat: 'Techo solar panorámico', file: 'caracteristica-sunroof.webp' },
     ],
     colores: [
-      { name: 'Aurora Green',  aerea: 'exterior-aurora-green-aereo.webp',  lateral: 'exterior-aurora-green-lateral.webp' },
-      { name: 'Starlit Black', aerea: 'exterior-starlit-black-aereo.webp', lateral: 'exterior-starlit-black-lateral.webp' },
-      { name: 'Snow White',    aerea: 'exterior-snow-white-aereo.webp',    lateral: 'exterior-snow-white-lateral.webp' },
-      { name: 'Cosmic Silver', aerea: 'exterior-cosmic-silver-aereo.webp', lateral: 'exterior-cosmic-silver-lateral.webp' },
-      { name: 'Moon Grey',     aerea: 'exterior-moon-grey-aereo.webp',     lateral: 'exterior-moon-grey-lateral.webp' },
-      { name: 'Phantom Grey',  aerea: 'exterior-phantom-grey-aereo.webp',  lateral: 'exterior-phantom-grey-lateral.webp' },
+      { name: 'Aurora Green',  aerea: 'exterior-auroragreen-aereo.webp',  lateral: 'exterior-auroragreen-lateral.webp' },
+      { name: 'Starlit Black', aerea: 'exterior-starlitblack-aereo.webp', lateral: 'exterior-starlitblack-lateral.webp' },
+      { name: 'Snow White',    aerea: 'exterior-snowwhite-aereo.webp',    lateral: 'exterior-snowwhite-lateral.webp' },
+      { name: 'Cosmic Silver', aerea: 'exterior-cosmicsilver-aereo.webp', lateral: 'exterior-cosmicsilver-lateral.webp' },
+      { name: 'Moon Grey',     aerea: 'exterior-moongrey-aereo.webp',     lateral: 'exterior-moongrey-lateral.webp' },
+      { name: 'Phantom Grey',  aerea: 'exterior-phantomgrey-aereo.webp',  lateral: 'exterior-phantomgrey-lateral.webp' },
     ],
-    seguridad: [],
+    seguridad: [
+      { feat: 'HMA — Asistente de Luces de Carretera', file: 'seguridad-HMA.webp' },
+      { feat: 'ICA — Asistente de Crucero Integrado', file: 'seguridad-ICA.webp' },
+      { feat: 'LCW — Advertencia de Cambio de Carril', file: 'seguridad-LCW.webp' },
+      { feat: 'LKA — Asistente de Mantenimiento de Carril', file: 'seguridad-LKA.webp' },
+    ],
   },
 };
 

@@ -46,6 +46,26 @@
     },
     "servicios": {
       "type": "json"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "nombre"
+    },
+    "telefono": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "imagen_portada": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "orden": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

@@ -1,0 +1,86 @@
+{
+  "kind": "singleType",
+  "collectionName": "globals",
+  "info": {
+    "singularName": "global",
+    "pluralName": "globals",
+    "displayName": "Global",
+    "description": "Configuraci\u00f3n global del sitio (navbar, whatsapp, claves, defaults SEO)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "brand_name": {
+      "type": "string",
+      "default": "SOUEAST Chile"
+    },
+    "brand_logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "tagline_eyebrow": {
+      "type": "component",
+      "component": "shared.eyebrow-tri",
+      "repeatable": false
+    },
+    "nav_models": {
+      "type": "component",
+      "component": "nav.model-link",
+      "repeatable": true
+    },
+    "nav_cotizar_label": {
+      "type": "string",
+      "default": "Cotizar"
+    },
+    "nav_sucursales_label": {
+      "type": "string",
+      "default": "Sucursales"
+    },
+    "nav_cta_external_url": {
+      "type": "string"
+    },
+    "whatsapp_phone": {
+      "type": "string"
+    },
+    "whatsapp_brand_name": {
+      "type": "string",
+      "default": "Andes Retail"
+    },
+    "whatsapp_subtitle": {
+      "type": "text"
+    },
+    "whatsapp_bubble_text": {
+      "type": "text"
+    },
+    "whatsapp_button_label": {
+      "type": "string",
+      "default": "\u00a1Hablemos!"
+    },
+    "whatsapp_credit_html": {
+      "type": "richtext"
+    },
+    "bloomreach_token": {
+      "type": "string"
+    },
+    "bloomreach_target": {
+      "type": "string",
+      "default": "https://api.us1.exponea.com"
+    },
+    "google_maps_api_key": {
+      "type": "string"
+    },
+    "default_cotizar_modelo": {
+      "type": "string",
+      "default": "S06"
+    },
+    "default_seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}
