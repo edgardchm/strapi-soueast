@@ -30,9 +30,11 @@ module.exports = ({ env }) => {
       name: 'strapi::cors',
       config: {
         origin,
-        headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-        keepHeaderOnError: true,
+        // Lista corta rompe el preflight: Chrome manda Cache-Control, Pragma, Sec-Fetch-*, etc.
+        // [] → @koa/cors reutiliza Access-Control-Request-Headers del navegador.
+        headers: [],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'],
+        keepHeadersOnError: true,
       },
     },
     'strapi::poweredBy',
