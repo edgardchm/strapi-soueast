@@ -40,6 +40,14 @@
       "type": "string",
       "default": "Sucursales"
     },
+    "nav_service_label": {
+      "type": "string",
+      "default": "Agenda tu servicio"
+    },
+    "nav_service_href": {
+      "type": "string",
+      "default": "#servicio"
+    },
     "nav_cta_external_url": {
       "type": "string"
     },

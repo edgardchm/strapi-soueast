@@ -11,12 +11,34 @@ const DEFAULT_VERSIONES = [
   { nombre: '1.5T-6DCT Lite' },
   { nombre: '1.6TD-7DCT Pro Max' },
 ];
-const DEFAULT_COLORES = [
-  { name: 'Color 1', hex: '#92B1B9', tipo: 'Exterior' },
-  { name: 'Color 2', hex: '#1E1E1E', tipo: 'Exterior' },
-  { name: 'Color 3', hex: '#F3F3F1', tipo: 'Exterior' },
-  { name: 'Color 4', hex: '#D9845B', tipo: 'Exterior' },
-  { name: 'Color 5', hex: '#3A6F8F', tipo: 'Exterior' },
+// Colores seed — nombres, orden y hex alineados con `features/modelo/modeloFallbacks.js`
+// (snapshot soueastchile.cl). Sin medias en seed: el front completa rutas locales.
+const SEED_S06_COLORES = [
+  { name: 'Negro', hex: '#000000', tipo: 'Exterior' },
+  { name: 'Gris grafito', hex: '#5F5F5F', tipo: 'Exterior' },
+  { name: 'Gris plata', hex: '#9B999A', tipo: 'Exterior' },
+  { name: 'Blanco', hex: '#F0F0F0', tipo: 'Exterior' },
+  { name: 'Gris niebla', hex: '#B9B9B9', tipo: 'Exterior' },
+  { name: 'Verde', hex: '#92B1B9', tipo: 'Exterior' },
+  { name: 'Negro', hex: '#000000', tipo: 'Interior' },
+];
+const SEED_S06PHEV_COLORES = [
+  { name: 'Verde', hex: '#92B1B9', tipo: 'Exterior' },
+  { name: 'Plata', hex: '#9B999A', tipo: 'Exterior' },
+  { name: 'Gris niebla', hex: '#B9B9B9', tipo: 'Exterior' },
+  { name: 'Gris grafito', hex: '#5F5F5F', tipo: 'Exterior' },
+  { name: 'Blanco', hex: '#F0F0F0', tipo: 'Exterior' },
+  { name: 'Negro', hex: '#000000', tipo: 'Exterior' },
+  { name: 'Bi tono', hex: '#F5EDDC', tipo: 'Interior' },
+];
+const SEED_S07_COLORES = [
+  { name: 'Azul océano', hex: '#000080', tipo: 'Exterior' },
+  { name: 'Gris plata', hex: '#9A9A9A', tipo: 'Exterior' },
+  { name: 'Azul claro', hex: '#87CEEB', tipo: 'Exterior' },
+  { name: 'Gris niebla', hex: '#000000', tipo: 'Exterior' },
+  { name: 'Blanco perlado', hex: '#EEEBD9', tipo: 'Exterior' },
+  { name: 'Blanco nieve', hex: '#F0F0F0', tipo: 'Exterior' },
+  { name: 'Negro', hex: '#000000', tipo: 'Interior' },
 ];
 const DEFAULT_GALERIA = [
   { feat: 'Característica 1', desc: 'Descripción de la característica destacada.' },
@@ -33,12 +55,13 @@ const DEFAULT_PRECIO_LEGAL =
   '*Precio referencial. Sujeto a stock y condiciones del mercado. No incluye derechos de inscripción.';
 
 // ─── Datos por modelo ─────────────────────────────────────────────────────
-const S09_COLORES = [
-  { name: 'Verde Aurora', hex: '#3F5C4A', tipo: 'Exterior' },
-  { name: 'Negro Estrellado', hex: '#1A1A1A', tipo: 'Exterior' },
-  { name: 'Blanco Nieve', hex: '#F2F2F0', tipo: 'Exterior' },
-  { name: 'Azul Cósmico', hex: '#2B4A6B', tipo: 'Exterior' },
-  { name: 'Gris Niebla', hex: '#7A7E82', tipo: 'Exterior' },
+const SEED_S09_COLORES = [
+  { name: 'Verde', hex: '#427276', tipo: 'Exterior' },
+  { name: 'Azul', hex: '#3E5D9C', tipo: 'Exterior' },
+  { name: 'Gris Niebla', hex: '#D7D7D7', tipo: 'Exterior' },
+  { name: 'Negro', hex: '#000000', tipo: 'Exterior' },
+  { name: 'Blanco', hex: '#E5E5E5', tipo: 'Exterior' },
+  { name: 'Negro', hex: '#444444', tipo: 'Interior' },
 ];
 const S09_GALERIA = [
   { feat: 'Pantalla central de 15.6"', desc: 'Pantalla inmersiva que da vida a cada momento con claridad cinematográfica.' },
@@ -56,14 +79,6 @@ const S09_SEGURIDAD = [
   { feat: 'AEB — Frenado Autónomo de Emergencia', desc: 'Frena automáticamente para evitar o mitigar una colisión.' },
 ];
 
-const S06PHEV_COLORES = [
-  { name: 'Aurora Green', hex: '#3F5C4A', tipo: 'Exterior' },
-  { name: 'Starlit Black', hex: '#1A1A1A', tipo: 'Exterior' },
-  { name: 'Snow White', hex: '#F2F2F0', tipo: 'Exterior' },
-  { name: 'Cosmic Silver', hex: '#C5C7CA', tipo: 'Exterior' },
-  { name: 'Moon Grey', hex: '#7A7E82', tipo: 'Exterior' },
-  { name: 'Phantom Grey', hex: '#3D3F44', tipo: 'Exterior' },
-];
 const S06PHEV_GALERIA = [
   { feat: 'Pantalla central', desc: 'Interfaz moderna con respuesta táctil precisa.' },
   { feat: 'Diseño exterior', desc: 'Líneas dinámicas con un acabado impecable.' },
@@ -82,7 +97,7 @@ const SEED_MODELOS = [
     page_url: 'modelo-s09.html',
     news_tag: 'Próximamente',
     versiones: DEFAULT_VERSIONES,
-    colores: S09_COLORES,
+    colores: SEED_S09_COLORES,
     galeria: S09_GALERIA,
     seguridad: S09_SEGURIDAD,
   },
@@ -96,7 +111,7 @@ const SEED_MODELOS = [
     page_url: 'modelo-s07.html',
     news_tag: 'Lanzamiento',
     versiones: DEFAULT_VERSIONES,
-    colores: DEFAULT_COLORES,
+    colores: SEED_S07_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
   },
@@ -110,7 +125,7 @@ const SEED_MODELOS = [
     page_url: 'modelo-s06.html',
     news_tag: 'Lanzamiento',
     versiones: DEFAULT_VERSIONES,
-    colores: DEFAULT_COLORES,
+    colores: SEED_S06_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
   },
@@ -124,7 +139,7 @@ const SEED_MODELOS = [
     page_url: 'modelo-s06-phev.html',
     news_tag: 'Híbrido enchufable',
     versiones: DEFAULT_VERSIONES,
-    colores: S06PHEV_COLORES,
+    colores: SEED_S06PHEV_COLORES,
     galeria: S06PHEV_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
   },
@@ -215,6 +230,8 @@ const SEED_GLOBAL = {
   ],
   nav_cotizar_label: 'Cotizar',
   nav_sucursales_label: 'Sucursales',
+  nav_service_label: 'Agenda tu servicio',
+  nav_service_href: '#servicio',
   nav_cta_external_url: 'https://andesmotor.in-touch.cl/agenda/jetour/',
   whatsapp_phone: '56912345678',
   whatsapp_brand_name: 'Andes Retail',

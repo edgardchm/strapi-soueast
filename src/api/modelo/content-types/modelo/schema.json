@@ -113,6 +113,15 @@
       "type": "component",
       "component": "shared.seo",
       "repeatable": false
+    },
+    "specs_disclaimer": {
+      "type": "text"
+    },
+    "specs": {
+      "type": "json"
+    },
+    "cotizar_privacidad_html": {
+      "type": "richtext"
     }
   }
 }

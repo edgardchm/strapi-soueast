@@ -943,6 +943,9 @@ export interface ApiGlobalGlobal extends Schema.SingleType {
     nav_models: Attribute.Component<'nav.model-link', true>;
     nav_cotizar_label: Attribute.String & Attribute.DefaultTo<'Cotizar'>;
     nav_sucursales_label: Attribute.String & Attribute.DefaultTo<'Sucursales'>;
+    nav_service_label: Attribute.String &
+      Attribute.DefaultTo<'Agenda tu servicio'>;
+    nav_service_href: Attribute.String & Attribute.DefaultTo<'#servicio'>;
     nav_cta_external_url: Attribute.String;
     whatsapp_phone: Attribute.String;
     whatsapp_brand_name: Attribute.String & Attribute.DefaultTo<'Andes Retail'>;
@@ -1107,6 +1110,9 @@ export interface ApiModeloModelo extends Schema.CollectionType {
     news_tag: Attribute.String;
     page_url: Attribute.String;
     seo: Attribute.Component<'shared.seo'>;
+    specs_disclaimer: Attribute.Text;
+    specs: Attribute.JSON;
+    cotizar_privacidad_html: Attribute.RichText;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

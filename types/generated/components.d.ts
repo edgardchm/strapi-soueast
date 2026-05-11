@@ -115,6 +115,22 @@ export interface ModeloColor extends Schema.Component {
   };
 }
 
+export interface HomeActionCard extends Schema.Component {
+  collectionName: 'components_home_action_cards';
+  info: {
+    displayName: 'Action Card';
+    description: 'Tarjeta de acci\u00F3n para la secci\u00F3n "Qu\u00E9 hacer" (home)';
+    icon: 'hand-pointer';
+  };
+  attributes: {
+    label: Attribute.String & Attribute.Required;
+    icon: Attribute.Enumeration<['se', 'pin', 'doc', 'wrench', 'car']> &
+      Attribute.DefaultTo<'se'>;
+    href: Attribute.String & Attribute.Required;
+    primary: Attribute.Boolean & Attribute.DefaultTo<false>;
+  };
+}
+
 export interface FooterColumn extends Schema.Component {
   collectionName: 'components_footer_columns';
   info: {
@@ -146,22 +162,6 @@ export interface NavModelLink extends Schema.Component {
   };
 }
 
-export interface HomeActionCard extends Schema.Component {
-  collectionName: 'components_home_action_cards';
-  info: {
-    displayName: 'Action Card';
-    description: 'Tarjeta de acci\u00F3n para la secci\u00F3n "Qu\u00E9 hacer" (home)';
-    icon: 'hand-pointer';
-  };
-  attributes: {
-    label: Attribute.String & Attribute.Required;
-    icon: Attribute.Enumeration<['se', 'pin', 'doc', 'wrench', 'car']> &
-      Attribute.DefaultTo<'se'>;
-    href: Attribute.String & Attribute.Required;
-    primary: Attribute.Boolean & Attribute.DefaultTo<false>;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
@@ -172,9 +172,9 @@ declare module '@strapi/types' {
       'shared.eyebrow-tri': SharedEyebrowTri;
       'modelo.feature': ModeloFeature;
       'modelo.color': ModeloColor;
+      'home.action-card': HomeActionCard;
       'footer.column': FooterColumn;
       'nav.model-link': NavModelLink;
-      'home.action-card': HomeActionCard;
     }
   }
 }
