@@ -1,3 +1,7 @@
-module.exports = () => ({
-  // Habilitar plugins adicionales aquí
+module.exports = ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET'),
+    },
+  },
 });
