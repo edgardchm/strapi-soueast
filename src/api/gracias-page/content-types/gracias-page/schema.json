@@ -1,0 +1,42 @@
+{
+  "kind": "singleType",
+  "collectionName": "gracias_pages",
+  "info": {
+    "singularName": "gracias-page",
+    "pluralName": "gracias-pages",
+    "displayName": "Gracias Page",
+    "description": "Copy de la p\u00e1gina post-submit"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "\u00a1Gracias!"
+    },
+    "mensaje": {
+      "type": "richtext"
+    },
+    "imagen": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "cta_label": {
+      "type": "string",
+      "default": "Volver al inicio"
+    },
+    "cta_href": {
+      "type": "string",
+      "default": "home.html"
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

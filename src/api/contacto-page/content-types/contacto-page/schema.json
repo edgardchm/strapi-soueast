@@ -1,0 +1,70 @@
+{
+  "kind": "singleType",
+  "collectionName": "contacto_pages",
+  "info": {
+    "singularName": "contacto-page",
+    "pluralName": "contacto-pages",
+    "displayName": "Contacto Page",
+    "description": "Configuraci\u00f3n del formulario de contacto y copy de la p\u00e1gina"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hero_title": {
+      "type": "string",
+      "default": "Contacto"
+    },
+    "nav_cotizar_label": {
+      "type": "string",
+      "default": "Cotizar"
+    },
+    "nav_cotizar_href": {
+      "type": "string",
+      "default": "cotizador.html"
+    },
+    "nav_sucursales_label": {
+      "type": "string",
+      "default": "Sucursales"
+    },
+    "nav_sucursales_href": {
+      "type": "string",
+      "default": "sucursales.html"
+    },
+    "tipos_solicitud": {
+      "type": "json"
+    },
+    "areas": {
+      "type": "json"
+    },
+    "modelos_form": {
+      "type": "json"
+    },
+    "privacidad_label_html": {
+      "type": "richtext"
+    },
+    "mensaje_exito_titulo": {
+      "type": "string",
+      "default": "\u00a1Gracias por contactarnos!"
+    },
+    "mensaje_exito_texto": {
+      "type": "text"
+    },
+    "mensaje_exito_cta_label": {
+      "type": "string",
+      "default": "Enviar otra consulta"
+    },
+    "footer_image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

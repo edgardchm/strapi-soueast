@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_versions",
+  "info": {
+    "displayName": "Version",
+    "description": "Variante de motor/transmisión disponible para un modelo",
+    "icon": "cog"
+  },
+  "options": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

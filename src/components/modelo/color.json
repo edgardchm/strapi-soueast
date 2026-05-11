@@ -1,0 +1,47 @@
+{
+  "collectionName": "components_modelo_colors",
+  "info": {
+    "displayName": "Color",
+    "description": "Color disponible para el modelo (exterior o interior)",
+    "icon": "palette"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "hex": {
+      "type": "string",
+      "required": true,
+      "regex": "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$"
+    },
+    "tipo": {
+      "type": "enumeration",
+      "enum": ["Exterior", "Interior"],
+      "default": "Exterior"
+    },
+    "imagen_aerea": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "imagen_lateral": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"],
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    }
+  }
+}

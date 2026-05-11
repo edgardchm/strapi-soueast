@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "noticias_pages",
+  "info": {
+    "singularName": "noticias-page",
+    "pluralName": "noticias-pages",
+    "displayName": "Noticias Page",
+    "description": "Configuraci\u00f3n de la p\u00e1gina de listado de noticias"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hero_eyebrow_label": {
+      "type": "string",
+      "default": "\u00daltimas noticias"
+    },
+    "hero_title": {
+      "type": "string",
+      "default": "Noticias"
+    },
+    "categorias": {
+      "type": "json"
+    },
+    "empty_state_text": {
+      "type": "text",
+      "default": "No hay noticias en esta categor\u00eda por el momento."
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

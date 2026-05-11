@@ -1,0 +1,74 @@
+{
+  "kind": "collectionType",
+  "collectionName": "noticias",
+  "info": {
+    "singularName": "noticia",
+    "pluralName": "noticias",
+    "displayName": "Noticia",
+    "description": "Art\u00edculos, eventos y novedades"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "titulo",
+      "required": true
+    },
+    "titulo": {
+      "type": "string",
+      "required": true
+    },
+    "categoria": {
+      "type": "enumeration",
+      "enum": ["Marca", "Modelos", "Lanzamientos", "Tecnologia"],
+      "default": "Marca"
+    },
+    "fecha": {
+      "type": "date"
+    },
+    "fecha_label": {
+      "type": "string"
+    },
+    "tag": {
+      "type": "string"
+    },
+    "tag_variant": {
+      "type": "enumeration",
+      "enum": ["red", "white", "blue", "green"],
+      "default": "red"
+    },
+    "imagen": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "destacado_home": {
+      "type": "boolean",
+      "default": false
+    },
+    "orden_home": {
+      "type": "integer"
+    },
+    "resumen": {
+      "type": "text"
+    },
+    "contenido": {
+      "type": "richtext"
+    },
+    "cta_label": {
+      "type": "string"
+    },
+    "cta_href": {
+      "type": "string"
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    }
+  }
+}

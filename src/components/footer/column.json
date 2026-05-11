@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_footer_columns",
+  "info": {
+    "displayName": "Footer Column",
+    "description": "Columna del footer con t\u00edtulo y lista de links",
+    "icon": "list"
+  },
+  "options": {},
+  "attributes": {
+    "titulo": {
+      "type": "string",
+      "required": true
+    },
+    "links": {
+      "type": "component",
+      "component": "shared.link",
+      "repeatable": true
+    }
+  }
+}

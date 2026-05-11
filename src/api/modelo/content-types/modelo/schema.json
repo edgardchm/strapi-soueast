@@ -1,0 +1,127 @@
+{
+  "kind": "collectionType",
+  "collectionName": "modelos",
+  "info": {
+    "singularName": "modelo",
+    "pluralName": "modelos",
+    "displayName": "Modelo",
+    "description": "Modelos de vehículos SOUEAST"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "nombre",
+      "required": true
+    },
+    "nombre": {
+      "type": "string",
+      "required": true
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "precio_desde": {
+      "type": "integer",
+      "min": 0
+    },
+    "precio_legal": {
+      "type": "text"
+    },
+    "destacado": {
+      "type": "boolean",
+      "default": false
+    },
+    "categoria": {
+      "type": "enumeration",
+      "enum": ["SUV", "Sedán", "Pick Up", "Híbrido"],
+      "default": "SUV"
+    },
+    "orden": {
+      "type": "integer",
+      "default": 0
+    },
+    "imagen_principal": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "imagen_lateral": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "versiones": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.version"
+    },
+    "galeria": {
+      "type": "component",
+      "repeatable": true,
+      "component": "modelo.feature"
+    },
+    "colores": {
+      "type": "component",
+      "repeatable": true,
+      "component": "modelo.color"
+    },
+    "seguridad": {
+      "type": "component",
+      "repeatable": true,
+      "component": "modelo.feature"
+    },
+    "nav_label": {
+      "type": "string"
+    },
+    "descripcion_lead": {
+      "type": "text"
+    },
+    "hero_cta_primary_label": {
+      "type": "string"
+    },
+    "hero_cta_primary_href": {
+      "type": "string"
+    },
+    "hero_cta_secondary_label": {
+      "type": "string"
+    },
+    "hero_cta_secondary_href": {
+      "type": "string"
+    },
+    "news_imagen_lateral": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "news_tag": {
+      "type": "string"
+    },
+    "page_url": {
+      "type": "string"
+    },
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    },
+    "specs_disclaimer": {
+      "type": "text"
+    },
+    "specs": {
+      "type": "json"
+    },
+    "cotizar_privacidad_html": {
+      "type": "richtext"
+    }
+  }
+}

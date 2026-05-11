@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_social_links",
+  "info": {
+    "displayName": "Social Link",
+    "description": "Enlace a red social",
+    "icon": "share-alt"
+  },
+  "options": {},
+  "attributes": {
+    "red": {
+      "type": "enumeration",
+      "enum": ["instagram", "facebook", "tiktok", "youtube", "x", "linkedin"],
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "aria_label": {
+      "type": "string"
+    }
+  }
+}

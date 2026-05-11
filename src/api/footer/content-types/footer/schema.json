@@ -1,0 +1,66 @@
+{
+  "kind": "singleType",
+  "collectionName": "footers",
+  "info": {
+    "singularName": "footer",
+    "pluralName": "footers",
+    "displayName": "Footer",
+    "description": "Configuraci\u00f3n del footer global"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "copyright": {
+      "type": "string"
+    },
+    "legales": {
+      "type": "richtext"
+    },
+    "columnas": {
+      "type": "json"
+    },
+    "tagline_eyebrow": {
+      "type": "component",
+      "component": "shared.eyebrow-tri",
+      "repeatable": false
+    },
+    "back_to_top_label": {
+      "type": "string",
+      "default": "VOLVER ARRIBA"
+    },
+    "modelos_titulo": {
+      "type": "string",
+      "default": "Modelos"
+    },
+    "modelos_links": {
+      "type": "component",
+      "component": "shared.link",
+      "repeatable": true
+    },
+    "secondary_titulo": {
+      "type": "string",
+      "default": "M\u00e1s"
+    },
+    "secondary_links": {
+      "type": "component",
+      "component": "shared.link",
+      "repeatable": true
+    },
+    "social_titulo": {
+      "type": "string",
+      "default": "S\u00edguenos"
+    },
+    "social": {
+      "type": "component",
+      "component": "shared.social-link",
+      "repeatable": true
+    },
+    "columnas_tipadas": {
+      "type": "component",
+      "component": "footer.column",
+      "repeatable": true
+    }
+  }
+}

@@ -1,0 +1,33 @@
+############################
+# OS X
+############################
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+.Spotlight-V100
+.Trashes
+._*
+
+############################
+# Node.js
+############################
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
+############################
+# Strapi
+############################
+
+.cache
+build
+dist
+.tmp
+.strapi-updater.json
+exports
+*.cache
+.env
+license.txt
