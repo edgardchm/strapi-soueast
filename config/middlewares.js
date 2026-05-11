@@ -8,14 +8,18 @@ const localOrigins = [
 ];
 
 module.exports = ({ env }) => {
+  const frontendUrl = (env('FRONTEND_URL') || '').trim();
   const fromEnv = (env('CORS_ORIGIN') || '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
   const origin = [
-    ...localOrigins,
-    'https://nimble-gaufre-3f7ca9.netlify.app',
-    ...fromEnv,
+    ...new Set([
+      ...localOrigins,
+      'https://nimble-gaufre-3f7ca9.netlify.app',
+      ...(frontendUrl ? [frontendUrl] : []),
+      ...fromEnv,
+    ]),
   ];
 
   return [
