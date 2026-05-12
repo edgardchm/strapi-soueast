@@ -44,14 +44,10 @@ const GLOBAL_ASSETS = {
   brand_logo:         null, // si tienes un logo, indícalo aquí (ej: 'logo.svg')
 };
 
-// Plan de noticias — slug ↔ imagen.
+// Plan de noticias — slug ↔ imagen (mismas que soueastchile.cl / fallback estático).
 const NOTICIAS_IMAGES = {
-  'soueast-showroom-movicenter':         'news-1.jpg',
-  'soueast-nueva-marca-mercado-chileno': 'news-2.jpg',
-  'soueast-s06-mejor-suv-2025':          'news-3.jpg',
-  'soueast-s07-lanzamiento-oficial':     'news-modelo.jpg',
-  'soueast-red-sucursales-expansion':    'news-1.jpg',
-  'soueast-s06-phev-tecnologia':         'news-modelo.jpg',
+  'soueast-showroom-movicenter':         'news-showroom-movicenter.jpg',
+  'soueast-nueva-marca-mercado-chileno': 'news-lanzamiento-soueast-chile.webp',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────

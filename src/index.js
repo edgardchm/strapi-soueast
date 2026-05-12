@@ -52,7 +52,7 @@ const DEFAULT_SEGURIDAD = [
   { feat: 'Sistema de seguridad 3', desc: 'Descripción del sistema de seguridad.' },
 ];
 const DEFAULT_PRECIO_LEGAL =
-  '*Precio referencial. Sujeto a stock y condiciones del mercado. No incluye derechos de inscripción.';
+  '*Imágenes referenciales, pueden incluir opcionales. Precio varía según versión';
 
 // ─── Datos por modelo ─────────────────────────────────────────────────────
 const SEED_S09_COLORES = [
@@ -388,7 +388,7 @@ const SEED_GRACIAS_PAGE = {
   },
 };
 
-// ─── Noticias (collection) ────────────────────────────────────────────────
+// ─── Noticias (collection) — solo las dos publicadas en soueastchile.cl ─────
 const SEED_NOTICIAS = [
   {
     slug: 'soueast-showroom-movicenter',
@@ -400,7 +400,7 @@ const SEED_NOTICIAS = [
     destacado_home: true,
     orden_home: 1,
     resumen:
-      'La marca china de automóviles abrió las puertas de su primer showroom exclusivo en Movicenter, consolidando su presencia en el mercado automotriz chileno con una propuesta premium.',
+      'En el marco de su estrategia de expansión por el país, la firma asiática representada por Andes Motor estrenó su primera tienda propia en la ciudad del automóvil. El espacio, que es parte de una lista de nueve vitrinas bi-marca próximas a estrenar, exhibirá la nueva gama de SUVs, junto a pruebas de manejo y venta con bonos de financiamiento.',
     cta_label: 'LEER MÁS',
     cta_href: '#',
   },
@@ -414,57 +414,9 @@ const SEED_NOTICIAS = [
     destacado_home: true,
     orden_home: 2,
     resumen:
-      'Con modelos SUV de última generación y tecnología de vanguardia, Soueast llega a Chile de la mano de Andes Motor para transformar la experiencia de conducción.',
+      'La marca china del Grupo Chery, desembarca en suelo nacional de la mano de Andes Motor con una oferta inicial conformada por cuatro SUVs.',
     cta_label: 'LEER MÁS',
     cta_href: '#',
-  },
-  {
-    slug: 'soueast-s06-mejor-suv-2025',
-    titulo: 'El SOUEAST S06 es elegido entre los mejores SUV del año por revista AutoChile',
-    categoria: 'Modelos',
-    fecha: '2025-12-10',
-    fecha_label: '10 DICIEMBRE, 2025',
-    tag_variant: 'red',
-    destacado_home: false,
-    orden_home: 3,
-    resumen:
-      'La reconocida publicación automotriz destacó al S06 por su diseño vanguardista, eficiencia de combustible y equipamiento de seguridad activa como los diferenciadores clave.',
-  },
-  {
-    slug: 'soueast-s07-lanzamiento-oficial',
-    titulo: 'Lanzamiento oficial del SOUEAST S07 en Chile: precios, versiones y equipamiento',
-    categoria: 'Lanzamientos',
-    fecha: '2025-11-28',
-    fecha_label: '28 NOVIEMBRE, 2025',
-    tag_variant: 'red',
-    destacado_home: false,
-    orden_home: 4,
-    resumen:
-      'Andes Motor presentó oficialmente el S07, el SUV mediano que promete redefinir la categoría con su autonomía eléctrica extendida y tecnología de asistencia al conductor.',
-  },
-  {
-    slug: 'soueast-red-sucursales-expansion',
-    titulo: 'Soueast Chile expande su red de concesionarios a regiones del norte y sur del país',
-    categoria: 'Marca',
-    fecha: '2025-11-14',
-    fecha_label: '14 NOVIEMBRE, 2025',
-    tag_variant: 'red',
-    destacado_home: false,
-    orden_home: 5,
-    resumen:
-      'La marca amplía su cobertura con nuevos puntos de venta en Antofagasta, Concepción y Puerto Montt, acercando la experiencia Soueast a más clientes en todo Chile.',
-  },
-  {
-    slug: 'soueast-s06-phev-tecnologia',
-    titulo: '¿Cómo funciona la tecnología PHEV del SOUEAST S06? Todo lo que necesitas saber',
-    categoria: 'Tecnologia',
-    fecha: '2025-11-01',
-    fecha_label: '1 NOVIEMBRE, 2025',
-    tag_variant: 'red',
-    destacado_home: false,
-    orden_home: 6,
-    resumen:
-      'El sistema híbrido enchufable del S06 PHEV combina un motor de combustión con un motor eléctrico para ofrecer hasta 80 km de autonomía eléctrica pura y bajo consumo en ruta.',
   },
 ];
 

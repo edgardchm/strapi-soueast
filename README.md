@@ -24,6 +24,14 @@ Una vez creado el admin:
 - API pública lista: `http://localhost:1337/api/modelos`, `/api/sucursales`, `/api/footer`.
 - Los content types tienen `find` y `findOne` habilitados para el rol Public (lo hace el bootstrap).
 
+## Importante: borrador vs publicado (Draft & Publish)
+
+Todos los tipos de contenido relevantes tienen **`draftAndPublish: true`**. Guardar en el
+admin **no** basta: el API REST público solo devuelve entradas **publicadas**. Si
+editás y el sitio no refleja el cambio, abrí el entry y pulsá **Publish** (o
+**Publicar**). Railway puede mostrar “éxito” al guardar un borrador; el front
+sigue viendo la última versión publicada.
+
 ## Frontend ya conectado
 
 Todos los HTML del proyecto (`modelo-s06.html`, `modelo-s06-phev.html`, `modelo-s07.html`, `modelo-s09.html`, `home.html`, `sucursales.html`, `cotizador.html`, `gracias.html`, `index.html`) ya apuntan a `STRAPI_URL: "http://localhost:1337"` en su `window.__APP_CONFIG`. No tienes que tocar nada para verlos consumiendo el CMS.
