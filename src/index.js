@@ -5,12 +5,18 @@
 //   2. Si la base está vacía, carga seed completo (sin assets — esos se suben con
 //      `npm run seed:assets`). Idempotente: detecta si ya hay datos y no duplica.
 
-// ─── Defaults compartidos por modelos ─────────────────────────────────────
-const DEFAULT_VERSIONES = [
-  { nombre: '1.5T-6DCT' },
-  { nombre: '1.5T-6DCT Lite' },
-  { nombre: '1.6TD-7DCT Pro Max' },
+// ─── Versiones por modelo (nombres 1:1 con soueastchile.cl) ─────────────
+const VERSIONES_S06 = [
+  { nombre: '1.5T 6DCT LUX' },
+  { nombre: '1.6T 7DCT LUX' },
+  { nombre: '1.6T 7DCT LIMITED' },
 ];
+const VERSIONES_S07 = [
+  { nombre: '1.5T 6DCT' },
+  { nombre: '1.6T 7DCT' },
+];
+const VERSIONES_S06_PHEV = [{ nombre: 'S06 PHEV LIMITED' }];
+const VERSIONES_S09 = [{ nombre: '2.0T 7DCT' }];
 // Colores seed — nombres, orden y hex alineados con `features/modelo/modeloFallbacks.js`
 // (snapshot soueastchile.cl). Sin medias en seed: el front completa rutas locales.
 const SEED_S06_COLORES = [
@@ -96,7 +102,7 @@ const SEED_MODELOS = [
     nav_label: 'S09',
     page_url: 'modelo-s09.html',
     news_tag: 'Próximamente',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S09,
     colores: SEED_S09_COLORES,
     galeria: S09_GALERIA,
     seguridad: S09_SEGURIDAD,
@@ -110,7 +116,7 @@ const SEED_MODELOS = [
     nav_label: 'S07',
     page_url: 'modelo-s07.html',
     news_tag: 'Lanzamiento',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S07,
     colores: SEED_S07_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -124,7 +130,7 @@ const SEED_MODELOS = [
     nav_label: 'S06',
     page_url: 'modelo-s06.html',
     news_tag: 'Lanzamiento',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S06,
     colores: SEED_S06_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -138,7 +144,7 @@ const SEED_MODELOS = [
     nav_label: 'S06 PHEV',
     page_url: 'modelo-s06-phev.html',
     news_tag: 'Híbrido enchufable',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S06_PHEV,
     colores: SEED_S06PHEV_COLORES,
     galeria: S06PHEV_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -192,8 +198,10 @@ const SEED_FOOTER = {
   ],
   secondary_links: [
     { label: 'Noticias', href: 'noticias.html' },
-    { label: 'Legales', href: '#legales' },
-    { label: 'Políticas de privacidad', href: '#privacidad' },
+    // Antes apuntaban a anchors fantasma (#legales, #privacidad) que no existen
+    // en ninguna página → al click no navegaban. Ahora a las páginas reales.
+    { label: 'Legales', href: 'legales.html' },
+    { label: 'Políticas de privacidad', href: 'politicas-de-privacidad.html' },
     { label: 'Contáctanos', href: 'contacto.html' },
   ],
   social: [
