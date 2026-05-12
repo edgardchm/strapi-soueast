@@ -115,6 +115,36 @@ export interface ModeloColor extends Schema.Component {
   };
 }
 
+export interface LegalFinancingSim extends Schema.Component {
+  collectionName: 'components_legal_financing_sims';
+  info: {
+    displayName: 'Financing simulation';
+    description: 'Bloque de simulaci\u00F3n legal (ej. legales.html)';
+  };
+  attributes: {
+    titulo: Attribute.String & Attribute.Required;
+    cuerpo: Attribute.RichText;
+  };
+}
+
+export interface NavModelLink extends Schema.Component {
+  collectionName: 'components_nav_model_links';
+  info: {
+    displayName: 'Nav Model Link';
+    description: 'Item del navbar que apunta a una p\u00E1gina de modelo';
+    icon: 'car';
+  };
+  attributes: {
+    label_override: Attribute.String;
+    href: Attribute.String & Attribute.Required;
+    modelo: Attribute.Relation<
+      'nav.model-link',
+      'oneToOne',
+      'api::modelo.modelo'
+    >;
+  };
+}
+
 export interface HomeActionCard extends Schema.Component {
   collectionName: 'components_home_action_cards';
   info: {
@@ -144,24 +174,6 @@ export interface FooterColumn extends Schema.Component {
   };
 }
 
-export interface NavModelLink extends Schema.Component {
-  collectionName: 'components_nav_model_links';
-  info: {
-    displayName: 'Nav Model Link';
-    description: 'Item del navbar que apunta a una p\u00E1gina de modelo';
-    icon: 'car';
-  };
-  attributes: {
-    label_override: Attribute.String;
-    href: Attribute.String & Attribute.Required;
-    modelo: Attribute.Relation<
-      'nav.model-link',
-      'oneToOne',
-      'api::modelo.modelo'
-    >;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
@@ -172,9 +184,10 @@ declare module '@strapi/types' {
       'shared.eyebrow-tri': SharedEyebrowTri;
       'modelo.feature': ModeloFeature;
       'modelo.color': ModeloColor;
+      'legal.financing-sim': LegalFinancingSim;
+      'nav.model-link': NavModelLink;
       'home.action-card': HomeActionCard;
       'footer.column': FooterColumn;
-      'nav.model-link': NavModelLink;
     }
   }
 }

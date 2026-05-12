@@ -1,16 +1,26 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+const LEGAL_SIMS_SEED = require('../config/seed/legal-sims.json');
+
 // Bootstrap automático:
 //   1. Habilita find/findOne públicos para todos los content types editables.
 //   2. Si la base está vacía, carga seed completo (sin assets — esos se suben con
 //      `npm run seed:assets`). Idempotente: detecta si ya hay datos y no duplica.
 
-// ─── Defaults compartidos por modelos ─────────────────────────────────────
-const DEFAULT_VERSIONES = [
-  { nombre: '1.5T-6DCT' },
-  { nombre: '1.5T-6DCT Lite' },
-  { nombre: '1.6TD-7DCT Pro Max' },
+// ─── Versiones por modelo (nombres 1:1 con soueastchile.cl) ─────────────
+const VERSIONES_S06 = [
+  { nombre: '1.5T 6DCT LUX' },
+  { nombre: '1.6T 7DCT LUX' },
+  { nombre: '1.6T 7DCT LIMITED' },
 ];
+const VERSIONES_S07 = [
+  { nombre: '1.5T 6DCT' },
+  { nombre: '1.6T 7DCT' },
+];
+const VERSIONES_S06_PHEV = [{ nombre: 'S06 PHEV LIMITED' }];
+const VERSIONES_S09 = [{ nombre: '2.0T 7DCT' }];
 // Colores seed — nombres, orden y hex alineados con `features/modelo/modeloFallbacks.js`
 // (snapshot soueastchile.cl). Sin medias en seed: el front completa rutas locales.
 const SEED_S06_COLORES = [
@@ -96,7 +106,7 @@ const SEED_MODELOS = [
     nav_label: 'S09',
     page_url: 'modelo-s09.html',
     news_tag: 'Próximamente',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S09,
     colores: SEED_S09_COLORES,
     galeria: S09_GALERIA,
     seguridad: S09_SEGURIDAD,
@@ -110,7 +120,7 @@ const SEED_MODELOS = [
     nav_label: 'S07',
     page_url: 'modelo-s07.html',
     news_tag: 'Lanzamiento',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S07,
     colores: SEED_S07_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -124,7 +134,7 @@ const SEED_MODELOS = [
     nav_label: 'S06',
     page_url: 'modelo-s06.html',
     news_tag: 'Lanzamiento',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S06,
     colores: SEED_S06_COLORES,
     galeria: DEFAULT_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -138,7 +148,7 @@ const SEED_MODELOS = [
     nav_label: 'S06 PHEV',
     page_url: 'modelo-s06-phev.html',
     news_tag: 'Híbrido enchufable',
-    versiones: DEFAULT_VERSIONES,
+    versiones: VERSIONES_S06_PHEV,
     colores: SEED_S06PHEV_COLORES,
     galeria: S06PHEV_GALERIA,
     seguridad: DEFAULT_SEGURIDAD,
@@ -192,8 +202,10 @@ const SEED_FOOTER = {
   ],
   secondary_links: [
     { label: 'Noticias', href: 'noticias.html' },
-    { label: 'Legales', href: '#legales' },
-    { label: 'Políticas de privacidad', href: '#privacidad' },
+    // Antes apuntaban a anchors fantasma (#legales, #privacidad) que no existen
+    // en ninguna página → al click no navegaban. Ahora a las páginas reales.
+    { label: 'Legales', href: 'legales.html' },
+    { label: 'Políticas de privacidad', href: 'politicas-de-privacidad.html' },
     { label: 'Contáctanos', href: 'contacto.html' },
   ],
   social: [
@@ -230,6 +242,8 @@ const SEED_GLOBAL = {
   ],
   nav_cotizar_label: 'Cotizar',
   nav_sucursales_label: 'Sucursales',
+  nav_noticias_label: 'Noticias',
+  nav_noticias_href: 'noticias.html',
   nav_service_label: 'Agenda tu servicio',
   nav_service_href: '#servicio',
   nav_cta_external_url: 'https://andesmotor.in-touch.cl/agenda/jetour/',
@@ -240,6 +254,8 @@ const SEED_GLOBAL = {
   whatsapp_button_label: '¡Hablemos!',
   whatsapp_credit_html: '<em>desarollado por</em> <span>adereso</span>',
   default_cotizar_modelo: 'S06',
+  /** Vacío en seed: el cliente pega aquí la clave de Maps (no commitear valores reales). */
+  google_maps_api_key: '',
   default_seo: {
     meta_title: 'SOUEAST Chile',
     meta_description: 'SUV de última generación para Chile. Conoce los modelos S06, S06 PHEV, S07 y S09.',
@@ -376,6 +392,27 @@ const SEED_COTIZADOR_PAGE = {
 };
 
 // ─── Gracias Page ─────────────────────────────────────────────────────────
+const SEED_TEST_DRIVE_PAGE = {
+  hero_eyebrow: 'Agenda',
+  hero_title: 'Agenda tu Test Drive',
+  hero_lead:
+    'Vive la experiencia SOUEAST. Coordinamos contigo la sucursal y horario para que pruebes el modelo de tu interés.',
+  modelos_form: ['S06', 'S06 PHEV', 'S07', 'S09'],
+  submit_label: 'AGENDAR TEST DRIVE',
+  privacidad_html:
+    'Acepto expresamente las <a href="politicas-de-privacidad.html">políticas de privacidad</a> de Andes Motor.',
+  success_title: '¡Listo!',
+  success_lead:
+    'Recibimos tu solicitud. Te contactaremos muy pronto para confirmar la fecha y la sucursal del Test Drive.',
+  success_cta_label: 'VOLVER AL HOME',
+  success_cta_href: 'home.html',
+  nota_legal: '',
+  seo: {
+    meta_title: 'Test Drive — SOUEAST Chile',
+    meta_description: 'Agenda tu prueba de manejo SOUEAST en Chile.',
+  },
+};
+
 const SEED_GRACIAS_PAGE = {
   title: '¡Gracias!',
   mensaje:
@@ -451,8 +488,11 @@ async function setPublicPermissions(strapi, actions) {
 
 // ─── Helpers de seed idempotente ──────────────────────────────────────────
 async function ensureSingle(strapi, uid, data, label) {
-  const existing = await strapi.entityService.findMany(uid);
-  if (existing) {
+  const raw = await strapi.entityService.findMany(uid);
+  // Strapi 4 suele devolver un arreglo (p. ej. un solo global); si usamos el arreglo
+  // como entidad, todas las claves parecen "ausentes" y el seed loguea en cada boot.
+  const existing = Array.isArray(raw) ? raw[0] : raw;
+  if (existing && existing.id) {
     const missing = {};
     for (const [key, value] of Object.entries(data)) {
       if (existing[key] === undefined || existing[key] === null) {
@@ -490,6 +530,119 @@ async function seedIfEmpty(strapi) {
   await ensureSingle(strapi, 'api::contacto-page.contacto-page', SEED_CONTACTO_PAGE, 'contacto-page');
   await ensureSingle(strapi, 'api::cotizador-page.cotizador-page', SEED_COTIZADOR_PAGE, 'cotizador-page');
   await ensureSingle(strapi, 'api::gracias-page.gracias-page', SEED_GRACIAS_PAGE, 'gracias-page');
+  await ensureSingle(strapi, 'api::test-drive-page.test-drive-page', SEED_TEST_DRIVE_PAGE, 'test-drive-page');
+  await syncSeedLegalPages(strapi);
+}
+
+const POLITICAS_CONTENIDO_SEED_PATH = path.join(__dirname, '../config/seed/politicas-contenido.html');
+const SEED_LEGALES_BAJADA =
+  'A continuación se detallan las simulaciones de financiamiento y condiciones ' +
+  'comerciales vigentes para cada versión de los modelos SOUEAST. Las ' +
+  'simulaciones son referenciales y están sujetas a las condiciones de BK ' +
+  'Servicios Financieros y de los términos del crédito.';
+
+function richTextPlainLen(val) {
+  if (val == null) return 0;
+  return String(val).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().length;
+}
+
+async function syncSeedLegalPages(strapi) {
+  let politicasHtml = '';
+  try {
+    politicasHtml = fs.readFileSync(POLITICAS_CONTENIDO_SEED_PATH, 'utf8').trim();
+  } catch {
+    strapi.log.warn('[bootstrap] no se leyó politicas-contenido.html; políticas no se rellenan desde seed');
+  }
+
+  const rows = [
+    {
+      slug: 'politicas-de-privacidad',
+      titulo: 'Políticas de Privacidad',
+      bajada: '',
+      contenido: politicasHtml,
+      fecha_vigencia: '2024-01-01',
+      simulaciones: [],
+      seo: {
+        meta_title: 'Políticas de Privacidad — SOUEAST Chile',
+        meta_description:
+          'Políticas de privacidad y protección de datos personales — Andes Motor / SOUEAST Chile.',
+      },
+    },
+    {
+      slug: 'legales',
+      titulo: 'Legales',
+      bajada: SEED_LEGALES_BAJADA,
+      simulaciones: LEGAL_SIMS_SEED,
+      seo: {
+        meta_title: 'Legales — SOUEAST Chile',
+        meta_description: 'Simulaciones de financiamiento y condiciones comerciales SOUEAST Chile.',
+      },
+    },
+  ];
+
+  for (const row of rows) {
+    const found = await strapi.entityService.findMany('api::legal-page.legal-page', {
+      filters: { slug: { $eq: row.slug } },
+      limit: 1,
+      // Sin populate, `simulaciones` viene vacío y el seed reescribe Legales en cada arranque.
+      populate: ['simulaciones'],
+    });
+    const existing = found && found[0];
+
+    const needsPoliticas =
+      row.slug === 'politicas-de-privacidad' &&
+      politicasHtml &&
+      (!existing || richTextPlainLen(existing.contenido) < 120);
+    const needsLegales =
+      row.slug === 'legales' &&
+      (!existing ||
+        !Array.isArray(existing.simulaciones) ||
+        existing.simulaciones.length === 0 ||
+        richTextPlainLen(existing.bajada) < 20);
+
+    if (!existing) {
+      const createData = {
+        slug: row.slug,
+        titulo: row.titulo,
+        bajada: row.bajada,
+        seo: row.seo,
+        publishedAt: new Date(),
+      };
+      if (row.slug === 'politicas-de-privacidad') {
+        createData.contenido = row.contenido;
+        createData.fecha_vigencia = row.fecha_vigencia;
+        createData.simulaciones = row.simulaciones;
+      } else {
+        createData.simulaciones = row.simulaciones;
+      }
+      await strapi.entityService.create('api::legal-page.legal-page', { data: createData });
+      strapi.log.info(`[bootstrap] legal-page created slug=${row.slug}`);
+      continue;
+    }
+
+    if (!needsPoliticas && !needsLegales) continue;
+
+    const update = {};
+    if (needsPoliticas) {
+      Object.assign(update, {
+        titulo: row.titulo,
+        bajada: row.bajada,
+        contenido: row.contenido,
+        fecha_vigencia: row.fecha_vigencia,
+        seo: row.seo,
+      });
+    }
+    if (needsLegales) {
+      Object.assign(update, {
+        titulo: row.titulo,
+        bajada: row.bajada,
+        simulaciones: row.simulaciones,
+        seo: row.seo,
+      });
+    }
+    await strapi.entityService.update('api::legal-page.legal-page', existing.id, { data: update });
+    strapi.log.info(`[bootstrap] legal-page backfilled slug=${row.slug}`);
+  }
 }
 
 module.exports = {
@@ -509,6 +662,9 @@ module.exports = {
       'api::contacto-page.contacto-page.find',
       'api::cotizador-page.cotizador-page.find',
       'api::gracias-page.gracias-page.find',
+      'api::test-drive-page.test-drive-page.find',
+      'api::legal-page.legal-page.find',
+      'api::legal-page.legal-page.findOne',
       'api::noticia.noticia.find',
       'api::noticia.noticia.findOne',
     ]);

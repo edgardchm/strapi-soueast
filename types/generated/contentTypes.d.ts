@@ -943,6 +943,8 @@ export interface ApiGlobalGlobal extends Schema.SingleType {
     nav_models: Attribute.Component<'nav.model-link', true>;
     nav_cotizar_label: Attribute.String & Attribute.DefaultTo<'Cotizar'>;
     nav_sucursales_label: Attribute.String & Attribute.DefaultTo<'Sucursales'>;
+    nav_noticias_label: Attribute.String & Attribute.DefaultTo<'Noticias'>;
+    nav_noticias_href: Attribute.String & Attribute.DefaultTo<'noticias.html'>;
     nav_service_label: Attribute.String &
       Attribute.DefaultTo<'Agenda tu servicio'>;
     nav_service_href: Attribute.String & Attribute.DefaultTo<'#servicio'>;
@@ -1057,6 +1059,44 @@ export interface ApiHomePageHomePage extends Schema.SingleType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::home-page.home-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiLegalPageLegalPage extends Schema.CollectionType {
+  collectionName: 'legal_pages';
+  info: {
+    singularName: 'legal-page';
+    pluralName: 'legal-pages';
+    displayName: 'Legal Page';
+    description: 'P\u00E1ginas legales (pol\u00EDticas, legales, simulaciones) editables desde el CMS';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    slug: Attribute.UID<'api::legal-page.legal-page', 'titulo'> &
+      Attribute.Required;
+    titulo: Attribute.String & Attribute.Required;
+    bajada: Attribute.Text;
+    contenido: Attribute.RichText;
+    simulaciones: Attribute.Component<'legal.financing-sim', true>;
+    fecha_vigencia: Attribute.Date;
+    seo: Attribute.Component<'shared.seo'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::legal-page.legal-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::legal-page.legal-page',
       'oneToOne',
       'admin::user'
     > &
@@ -1264,6 +1304,48 @@ export interface ApiSucursalSucursal extends Schema.CollectionType {
   };
 }
 
+export interface ApiTestDrivePageTestDrivePage extends Schema.SingleType {
+  collectionName: 'test_drive_pages';
+  info: {
+    singularName: 'test-drive-page';
+    pluralName: 'test-drive-pages';
+    displayName: 'Test Drive Page';
+    description: 'Copy y textos del formulario Test Drive';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    hero_eyebrow: Attribute.String & Attribute.DefaultTo<'Agenda'>;
+    hero_title: Attribute.String & Attribute.DefaultTo<'Agenda tu Test Drive'>;
+    hero_lead: Attribute.Text;
+    modelos_form: Attribute.JSON;
+    submit_label: Attribute.String & Attribute.DefaultTo<'AGENDAR TEST DRIVE'>;
+    privacidad_html: Attribute.RichText;
+    success_title: Attribute.String & Attribute.DefaultTo<'\u00A1Listo!'>;
+    success_lead: Attribute.Text;
+    success_cta_label: Attribute.String & Attribute.DefaultTo<'VOLVER AL HOME'>;
+    success_cta_href: Attribute.String & Attribute.DefaultTo<'home.html'>;
+    nota_legal: Attribute.Text;
+    seo: Attribute.Component<'shared.seo'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::test-drive-page.test-drive-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::test-drive-page.test-drive-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -1288,10 +1370,12 @@ declare module '@strapi/types' {
       'api::global.global': ApiGlobalGlobal;
       'api::gracias-page.gracias-page': ApiGraciasPageGraciasPage;
       'api::home-page.home-page': ApiHomePageHomePage;
+      'api::legal-page.legal-page': ApiLegalPageLegalPage;
       'api::modelo.modelo': ApiModeloModelo;
       'api::noticia.noticia': ApiNoticiaNoticia;
       'api::noticias-page.noticias-page': ApiNoticiasPageNoticiasPage;
       'api::sucursal.sucursal': ApiSucursalSucursal;
+      'api::test-drive-page.test-drive-page': ApiTestDrivePageTestDrivePage;
     }
   }
 }
