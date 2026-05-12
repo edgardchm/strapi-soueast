@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_legal_financing_sims",
+  "info": {
+    "displayName": "Financing simulation",
+    "description": "Bloque de simulación legal (ej. legales.html)"
+  },
+  "options": {},
+  "attributes": {
+    "titulo": {
+      "type": "string",
+      "required": true
+    },
+    "cuerpo": {
+      "type": "richtext"
+    }
+  }
+}

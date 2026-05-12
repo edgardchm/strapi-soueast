@@ -40,6 +40,14 @@
       "type": "string",
       "default": "Sucursales"
     },
+    "nav_noticias_label": {
+      "type": "string",
+      "default": "Noticias"
+    },
+    "nav_noticias_href": {
+      "type": "string",
+      "default": "noticias.html"
+    },
     "nav_service_label": {
       "type": "string",
       "default": "Agenda tu servicio"

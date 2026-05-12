@@ -5,6 +5,8 @@ module.exports = ({ env }) => {
     .filter(Boolean);
 
   const staticAllow = new Set([
+    'http://localhost:1337',
+    'http://127.0.0.1:1337',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://localhost:3000',
@@ -30,7 +32,8 @@ module.exports = ({ env }) => {
     } catch (_) {
       /* ignore */
     }
-    return false;
+    // Strapi 4.25 cors wrapper hace .split() sobre el retorno; `false` rompe el admin.
+    return '';
   }
 
   return [
@@ -40,7 +43,6 @@ module.exports = ({ env }) => {
     {
       name: 'strapi::cors',
       config: {
-        enabled: true,
         origin: corsOrigin,
         headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],

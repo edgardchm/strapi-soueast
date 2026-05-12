@@ -1,0 +1,60 @@
+{
+  "kind": "singleType",
+  "collectionName": "test_drive_pages",
+  "info": {
+    "singularName": "test-drive-page",
+    "pluralName": "test-drive-pages",
+    "displayName": "Test Drive Page",
+    "description": "Copy y textos del formulario Test Drive"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hero_eyebrow": {
+      "type": "string",
+      "default": "Agenda"
+    },
+    "hero_title": {
+      "type": "string",
+      "default": "Agenda tu Test Drive"
+    },
+    "hero_lead": {
+      "type": "text"
+    },
+    "modelos_form": {
+      "type": "json"
+    },
+    "submit_label": {
+      "type": "string",
+      "default": "AGENDAR TEST DRIVE"
+    },
+    "privacidad_html": {
+      "type": "richtext"
+    },
+    "success_title": {
+      "type": "string",
+      "default": "\u00a1Listo!"
+    },
+    "success_lead": {
+      "type": "text"
+    },
+    "success_cta_label": {
+      "type": "string",
+      "default": "VOLVER AL HOME"
+    },
+    "success_cta_href": {
+      "type": "string",
+      "default": "home.html"
+    },
+    "nota_legal": {
+      "type": "text"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}
