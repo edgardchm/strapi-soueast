@@ -943,6 +943,7 @@ export interface ApiGlobalGlobal extends Schema.SingleType {
     nav_models: Attribute.Component<'nav.model-link', true>;
     nav_cotizar_label: Attribute.String & Attribute.DefaultTo<'Cotizar'>;
     nav_sucursales_label: Attribute.String & Attribute.DefaultTo<'Sucursales'>;
+    nav_sucursales_href: Attribute.String & Attribute.DefaultTo<'sucursales.html'>;
     nav_noticias_label: Attribute.String & Attribute.DefaultTo<'Noticias'>;
     nav_noticias_href: Attribute.String & Attribute.DefaultTo<'noticias.html'>;
     nav_service_label: Attribute.String &
@@ -960,6 +961,7 @@ export interface ApiGlobalGlobal extends Schema.SingleType {
     bloomreach_target: Attribute.String &
       Attribute.DefaultTo<'https://api.us1.exponea.com'>;
     google_maps_api_key: Attribute.String;
+    apimaz_subscription_key: Attribute.String;
     default_cotizar_modelo: Attribute.String & Attribute.DefaultTo<'S06'>;
     default_seo: Attribute.Component<'shared.seo'>;
     createdAt: Attribute.DateTime;

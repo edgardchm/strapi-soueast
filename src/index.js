@@ -242,6 +242,7 @@ const SEED_GLOBAL = {
   ],
   nav_cotizar_label: 'Cotizar',
   nav_sucursales_label: 'Sucursales',
+  nav_sucursales_href: 'sucursales.html',
   nav_noticias_label: 'Noticias',
   nav_noticias_href: 'noticias.html',
   nav_service_label: 'Agenda tu servicio',
@@ -256,6 +257,8 @@ const SEED_GLOBAL = {
   default_cotizar_modelo: 'S06',
   /** Vacío en seed: el cliente pega aquí la clave de Maps (no commitear valores reales). */
   google_maps_api_key: '',
+  /** Opcional: subscription Apimaz para el cotizador (el front también acepta ENV en build). */
+  apimaz_subscription_key: '',
   default_seo: {
     meta_title: 'SOUEAST Chile',
     meta_description: 'SUV de última generación para Chile. Conoce los modelos S06, S06 PHEV, S07 y S09.',

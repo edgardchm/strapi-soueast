@@ -40,6 +40,10 @@
       "type": "string",
       "default": "Sucursales"
     },
+    "nav_sucursales_href": {
+      "type": "string",
+      "default": "sucursales.html"
+    },
     "nav_noticias_label": {
       "type": "string",
       "default": "Noticias"
@@ -87,6 +91,9 @@
       "default": "https://api.us1.exponea.com"
     },
     "google_maps_api_key": {
+      "type": "string"
+    },
+    "apimaz_subscription_key": {
       "type": "string"
     },
     "default_cotizar_modelo": {
