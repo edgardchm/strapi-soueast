@@ -1,5 +1,19 @@
 const path = require('path');
 
+function pickFirstNonEmpty(...candidates) {
+  for (const c of candidates) {
+    if (c !== undefined && c !== null && String(c).trim() !== '') {
+      return String(c).trim();
+    }
+  }
+  return '';
+}
+
+function isLoopbackHost(host) {
+  const h = (host || '').trim().toLowerCase();
+  return h === '' || h === 'localhost' || h === '127.0.0.1' || h === '::1';
+}
+
 module.exports = ({ env }) => {
   const client = env('DATABASE_CLIENT', 'sqlite');
 
@@ -13,14 +27,38 @@ module.exports = ({ env }) => {
     ? { rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', false) }
     : undefined;
 
-  /** Railway/Heroku: use DATABASE_URL alone so host/port from URL are not overridden by localhost defaults. */
-  const postgresConnection = env('DATABASE_URL')
+  const databaseUrl = pickFirstNonEmpty(
+    env('DATABASE_URL'),
+    process.env.DATABASE_URL,
+    env('DATABASE_PRIVATE_URL'),
+    process.env.DATABASE_PRIVATE_URL,
+    env('DATABASE_PUBLIC_URL'),
+    process.env.DATABASE_PUBLIC_URL
+  );
+
+  const configuredHost = pickFirstNonEmpty(env('DATABASE_HOST'), process.env.DATABASE_HOST);
+  const pgHost = pickFirstNonEmpty(env('PGHOST'), process.env.PGHOST);
+  const host = !isLoopbackHost(configuredHost) ? configuredHost : pgHost || 'localhost';
+
+  if (
+    client === 'postgres' &&
+    !databaseUrl &&
+    isLoopbackHost(host) &&
+    (process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID)
+  ) {
+    throw new Error(
+      'Strapi Postgres: seguís apuntando a localhost en Railway. Borrá la variable DATABASE_HOST (si dice localhost), ' +
+        'y agregá DATABASE_URL / DATABASE_PRIVATE_URL / DATABASE_PUBLIC_URL (Reference al Postgres), o referenciá PGHOST/PGUSER/PGPASSWORD/PGDATABASE.'
+    );
+  }
+
+  const postgresConnection = databaseUrl
     ? {
-        connectionString: env('DATABASE_URL'),
+        connectionString: databaseUrl,
         ...(sslOption ? { ssl: sslOption } : {}),
       }
     : {
-        host: env('DATABASE_HOST', env('PGHOST', 'localhost')),
+        host,
         port: env.int('DATABASE_PORT', env.int('PGPORT', 5432)),
         database: env('DATABASE_NAME', env('PGDATABASE', 'strapi')),
         user: env('DATABASE_USERNAME', env('PGUSER', 'strapi')),
