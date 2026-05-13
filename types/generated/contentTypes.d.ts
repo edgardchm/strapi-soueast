@@ -943,7 +943,8 @@ export interface ApiGlobalGlobal extends Schema.SingleType {
     nav_models: Attribute.Component<'nav.model-link', true>;
     nav_cotizar_label: Attribute.String & Attribute.DefaultTo<'Cotizar'>;
     nav_sucursales_label: Attribute.String & Attribute.DefaultTo<'Sucursales'>;
-    nav_sucursales_href: Attribute.String & Attribute.DefaultTo<'sucursales.html'>;
+    nav_sucursales_href: Attribute.String &
+      Attribute.DefaultTo<'sucursales.html'>;
     nav_noticias_label: Attribute.String & Attribute.DefaultTo<'Noticias'>;
     nav_noticias_href: Attribute.String & Attribute.DefaultTo<'noticias.html'>;
     nav_service_label: Attribute.String &
@@ -1143,6 +1144,10 @@ export interface ApiModeloModelo extends Schema.CollectionType {
     colores: Attribute.Component<'modelo.color', true>;
     seguridad: Attribute.Component<'modelo.feature', true>;
     nav_label: Attribute.String;
+    show_in_menu: Attribute.Boolean & Attribute.DefaultTo<true>;
+    show_in_footer: Attribute.Boolean & Attribute.DefaultTo<true>;
+    show_in_home: Attribute.Boolean & Attribute.DefaultTo<true>;
+    show_in_cotizador: Attribute.Boolean & Attribute.DefaultTo<true>;
     descripcion_lead: Attribute.Text;
     hero_cta_primary_label: Attribute.String;
     hero_cta_primary_href: Attribute.String;

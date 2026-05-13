@@ -74,6 +74,65 @@ export interface SharedEyebrowTri extends Schema.Component {
   };
 }
 
+export interface NavModelLink extends Schema.Component {
+  collectionName: 'components_nav_model_links';
+  info: {
+    displayName: 'Nav Model Link';
+    description: 'Item del navbar que apunta a una p\u00E1gina de modelo';
+    icon: 'car';
+  };
+  attributes: {
+    label_override: Attribute.String;
+    href: Attribute.String & Attribute.Required;
+    modelo: Attribute.Relation<
+      'nav.model-link',
+      'oneToOne',
+      'api::modelo.modelo'
+    >;
+  };
+}
+
+export interface LegalFinancingSim extends Schema.Component {
+  collectionName: 'components_legal_financing_sims';
+  info: {
+    displayName: 'Financing simulation';
+    description: 'Bloque de simulaci\u00F3n legal (ej. legales.html)';
+  };
+  attributes: {
+    titulo: Attribute.String & Attribute.Required;
+    cuerpo: Attribute.RichText;
+  };
+}
+
+export interface HomeActionCard extends Schema.Component {
+  collectionName: 'components_home_action_cards';
+  info: {
+    displayName: 'Action Card';
+    description: 'Tarjeta de acci\u00F3n para la secci\u00F3n "Qu\u00E9 hacer" (home)';
+    icon: 'hand-pointer';
+  };
+  attributes: {
+    label: Attribute.String & Attribute.Required;
+    icon: Attribute.Enumeration<['se', 'pin', 'doc', 'wrench', 'car']> &
+      Attribute.DefaultTo<'se'>;
+    href: Attribute.String & Attribute.Required;
+    primary: Attribute.Boolean & Attribute.DefaultTo<false>;
+  };
+}
+
+export interface FooterColumn extends Schema.Component {
+  collectionName: 'components_footer_columns';
+  info: {
+    displayName: 'Footer Column';
+    description: 'Columna del footer con t\u00EDtulo y lista de links';
+    icon: 'list';
+  };
+  attributes: {
+    titulo: Attribute.String & Attribute.Required;
+    links: Attribute.Component<'shared.link', true>;
+  };
+}
+
 export interface ModeloFeature extends Schema.Component {
   collectionName: 'components_modelo_features';
   info: {
@@ -115,65 +174,6 @@ export interface ModeloColor extends Schema.Component {
   };
 }
 
-export interface LegalFinancingSim extends Schema.Component {
-  collectionName: 'components_legal_financing_sims';
-  info: {
-    displayName: 'Financing simulation';
-    description: 'Bloque de simulaci\u00F3n legal (ej. legales.html)';
-  };
-  attributes: {
-    titulo: Attribute.String & Attribute.Required;
-    cuerpo: Attribute.RichText;
-  };
-}
-
-export interface NavModelLink extends Schema.Component {
-  collectionName: 'components_nav_model_links';
-  info: {
-    displayName: 'Nav Model Link';
-    description: 'Item del navbar que apunta a una p\u00E1gina de modelo';
-    icon: 'car';
-  };
-  attributes: {
-    label_override: Attribute.String;
-    href: Attribute.String & Attribute.Required;
-    modelo: Attribute.Relation<
-      'nav.model-link',
-      'oneToOne',
-      'api::modelo.modelo'
-    >;
-  };
-}
-
-export interface HomeActionCard extends Schema.Component {
-  collectionName: 'components_home_action_cards';
-  info: {
-    displayName: 'Action Card';
-    description: 'Tarjeta de acci\u00F3n para la secci\u00F3n "Qu\u00E9 hacer" (home)';
-    icon: 'hand-pointer';
-  };
-  attributes: {
-    label: Attribute.String & Attribute.Required;
-    icon: Attribute.Enumeration<['se', 'pin', 'doc', 'wrench', 'car']> &
-      Attribute.DefaultTo<'se'>;
-    href: Attribute.String & Attribute.Required;
-    primary: Attribute.Boolean & Attribute.DefaultTo<false>;
-  };
-}
-
-export interface FooterColumn extends Schema.Component {
-  collectionName: 'components_footer_columns';
-  info: {
-    displayName: 'Footer Column';
-    description: 'Columna del footer con t\u00EDtulo y lista de links';
-    icon: 'list';
-  };
-  attributes: {
-    titulo: Attribute.String & Attribute.Required;
-    links: Attribute.Component<'shared.link', true>;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
@@ -182,12 +182,12 @@ declare module '@strapi/types' {
       'shared.seo': SharedSeo;
       'shared.link': SharedLink;
       'shared.eyebrow-tri': SharedEyebrowTri;
-      'modelo.feature': ModeloFeature;
-      'modelo.color': ModeloColor;
-      'legal.financing-sim': LegalFinancingSim;
       'nav.model-link': NavModelLink;
+      'legal.financing-sim': LegalFinancingSim;
       'home.action-card': HomeActionCard;
       'footer.column': FooterColumn;
+      'modelo.feature': ModeloFeature;
+      'modelo.color': ModeloColor;
     }
   }
 }

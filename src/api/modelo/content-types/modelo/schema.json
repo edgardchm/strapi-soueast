@@ -82,6 +82,22 @@
     "nav_label": {
       "type": "string"
     },
+    "show_in_menu": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_in_footer": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_in_home": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_in_cotizador": {
+      "type": "boolean",
+      "default": true
+    },
     "descripcion_lead": {
       "type": "text"
     },
