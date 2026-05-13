@@ -4,20 +4,6 @@ module.exports = ({ env }) => {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  /** Railway/Netlify suelen usar FRONTEND_URL; antes solo leíamos FRONTEND_ORIGINS. */
-  const urlOrigins = String(env('FRONTEND_URL', ''))
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .map((entry) => {
-      try {
-        return new URL(entry).origin;
-      } catch {
-        return '';
-      }
-    })
-    .filter(Boolean);
-
   const staticAllow = new Set([
     'http://localhost:1337',
     'http://127.0.0.1:1337',
@@ -28,23 +14,19 @@ module.exports = ({ env }) => {
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     ...extraOrigins,
-    ...urlOrigins,
   ]);
 
   /**
-   * CORS: localhost + FRONTEND_ORIGINS + FRONTEND_URL + *.netlify.app + *.up.railway.app
+   * CORS dinámico: localhost + FRONTEND_ORIGINS + cualquier https://*.netlify.app
+   * (previews y sitios como nimble-gaufre-3f7ca9.netlify.app sin redeploy por URL).
    */
   function corsOrigin(ctx) {
     const requestOrigin = ctx.request.get('Origin');
-    // No devolver `true`: @koa/cors terminaría enviando ACAO inválido ("true").
-    if (!requestOrigin) return '';
+    if (!requestOrigin) return true;
     if (staticAllow.has(requestOrigin)) return requestOrigin;
     try {
       const u = new URL(requestOrigin);
       if (u.protocol === 'https:' && u.hostname.endsWith('.netlify.app')) {
-        return requestOrigin;
-      }
-      if (u.protocol === 'https:' && u.hostname.endsWith('.up.railway.app')) {
         return requestOrigin;
       }
     } catch (_) {
@@ -62,12 +44,20 @@ module.exports = ({ env }) => {
       name: 'strapi::cors',
       config: {
         origin: corsOrigin,
-        // Sin `headers`: Strapi usa el default (@koa/cors) y refleja Access-Control-Request-Headers en el preflight.
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+        // Incluir los mismos headers que usa fetch() en shared/services/strapiService.js
+        // (Cache-Control / Pragma no son “simple”; sin esto el preflight falla en el navegador).
+        headers: [
+          'Content-Type',
+          'Authorization',
+          'Origin',
+          'Accept',
+          'Cache-Control',
+          'Pragma',
+        ],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
         keepHeaderOnError: true,
       },
     },
-    'global::api-no-store',
     'strapi::poweredBy',
     'strapi::query',
     'strapi::body',
