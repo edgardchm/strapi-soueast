@@ -189,7 +189,10 @@ function tryUpload(folder, file, cache) {
 
 // Busca el modelo por slug. Devuelve { id, attributes } estilo v4 o null.
 async function getModeloBySlug(slug) {
-  const res = await api(`/api/modelos?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*&pagination[pageSize]=1`);
+  // Sin populate=*: sólo necesitamos `id`; evita relacionar/expander cosas innecesarias en la respuesta.
+  const res = await api(
+    `/api/modelos?filters[slug][$eq]=${encodeURIComponent(slug)}&pagination[pageSize]=1`
+  );
   return (res && res.data && res.data[0]) || null;
 }
 
