@@ -1,0 +1,130 @@
+{
+  "kind": "collectionType",
+  "collectionName": "modelo_versions",
+  "info": {
+    "singularName": "modelo-version",
+    "pluralName": "modelo-versions",
+    "displayName": "Versión de Modelo",
+    "description": "Versiones específicas de cada modelo de vehículo con sus precios y especificaciones"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Nombre descriptivo de la versión, ej: '6MT 1.5L Turbo Lux FL'"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "nombre",
+      "required": true,
+      "unique": true,
+      "description": "Slug único generado del nombre"
+    },
+    "codigo": {
+      "type": "string",
+      "unique": true,
+      "maxLength": 50,
+      "description": "Código único opcional del fabricante o sistema interno"
+    },
+    "modelo": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::modelo.modelo",
+      "inversedBy": "versiones_detalladas",
+      "required": true,
+      "description": "Relación con el modelo padre"
+    },
+    "precio_lista": {
+      "type": "biginteger",
+      "min": 0,
+      "description": "Precio de lista en moneda especificada (sin símbolos, ej: 17490000)"
+    },
+    "bono_marca": {
+      "type": "biginteger",
+      "min": 0,
+      "default": 0,
+      "description": "Descuento de marca aplicable"
+    },
+    "bono_financiamiento": {
+      "type": "biginteger",
+      "min": 0,
+      "default": 0,
+      "description": "Descuento por financiamiento"
+    },
+    "precio_final": {
+      "type": "biginteger",
+      "min": 0,
+      "description": "Precio final calculado: precio_lista - bono_marca - bono_financiamiento"
+    },
+    "moneda": {
+      "type": "enumeration",
+      "enum": ["CLP", "USD", "UF"],
+      "default": "CLP",
+      "description": "Moneda en la que está expresado el precio"
+    },
+    "transmision": {
+      "type": "string",
+      "maxLength": 50,
+      "description": "Tipo de transmisión, ej: '6MT', '7DCT', 'CVT'"
+    },
+    "motor": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Especificación del motor, ej: '1.5L Turbo', '2.0T GDI AWD'"
+    },
+    "combustible": {
+      "type": "enumeration",
+      "enum": ["Gasolina", "Diésel", "Híbrido", "Eléctrico", "GLP"],
+      "description": "Tipo de combustible"
+    },
+    "potencia": {
+      "type": "integer",
+      "min": 0,
+      "description": "Potencia en HP (caballos de fuerza)"
+    },
+    "torque": {
+      "type": "integer",
+      "min": 0,
+      "description": "Torque en Nm (Newton-metros)"
+    },
+    "consumo": {
+      "type": "decimal",
+      "description": "Consumo de combustible en l/100km"
+    },
+    "emision_co2": {
+      "type": "integer",
+      "min": 0,
+      "description": "Emisiones de CO2 en g/km"
+    },
+    "orden": {
+      "type": "integer",
+      "default": 0,
+      "description": "Orden de visualización dentro del modelo"
+    },
+    "activo": {
+      "type": "boolean",
+      "default": true,
+      "description": "¿Está esta versión disponible para compra?"
+    },
+    "metadata": {
+      "type": "json",
+      "description": "Información adicional flexible"
+    },
+    "importacion_fuente": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Fuente de la importación"
+    },
+    "importacion_id": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "ID de la importación para auditoría"
+    }
+  }
+}

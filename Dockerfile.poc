@@ -1,0 +1,59 @@
+# ==================== DOCKERFILE - strapi Backend ====================
+# Multi-stage build para Strapi 4.25.9
+# Imagen final: node:20-alpine
+# ===================================================================
+
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+
+LABEL maintainer="DevOps Team"
+LABEL description="Strapi CMS v4.25.9 - Backend POC"
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies (production)
+RUN npm ci --legacy-peer-deps --omit=dev
+
+# Copy source code
+COPY . .
+
+# Build Strapi for production
+RUN npm run build
+
+# ===================================================================
+# Stage 2: Runtime stage
+# ===================================================================
+FROM node:20-alpine
+
+LABEL maintainer="DevOps Team"
+
+WORKDIR /app
+
+# Copy only necessary files from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/config ./config
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/package*.json ./
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S strapi && \
+    adduser -S strapi -u 1001 && \
+    mkdir -p /app/.tmp && \
+    chown -R strapi:strapi /app
+
+USER strapi
+
+# Expose port
+EXPOSE 1337
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:1337/admin || exit 1
+
+# Start Strapi in production mode
+CMD ["npm", "run", "start"]

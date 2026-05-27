@@ -1,0 +1,166 @@
+# ==================== AZURE DEVOPS PIPELINE - Backend (strapi) ====================
+# Triggers: Push a rama main/develop, Pull Requests
+# Artifacts: Docker image en ACR
+# ==================================================================================
+
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+    - feature/*
+  paths:
+    exclude:
+    - README.md
+    - docs/**
+
+pr:
+  branches:
+    include:
+    - main
+    - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  NODE_VERSION: '20.x'
+  DOCKER_REGISTRY: '$(DOCKER_REGISTRY_URL)'
+  DOCKER_IMAGE_NAME: 'strapi-backend'
+  DOCKER_IMAGE_TAG: '$(Build.BuildId)'
+
+stages:
+
+# ==================================================================================
+# STAGE 1: VALIDATE & TEST
+# ==================================================================================
+- stage: ValidateAndTest
+  displayName: 'Validate and Test'
+  jobs:
+  - job: Validate
+    displayName: 'Validate Dependencies'
+    steps:
+
+    - task: NodeTool@0
+      displayName: 'Install Node.js $(NODE_VERSION)'
+      inputs:
+        versionSpec: '$(NODE_VERSION)'
+
+    - task: Npm@1
+      displayName: 'npm ci (Clean Install)'
+      inputs:
+        command: 'ci'
+
+    - script: |
+        echo "Checking Node version..."
+        node --version
+        echo "Checking npm version..."
+        npm --version
+      displayName: 'Version Check'
+
+    - task: Npm@1
+      displayName: 'npm audit (Security Check)'
+      inputs:
+        command: 'custom'
+        customCommand: 'audit --production'
+      continueOnError: true
+
+    - script: |
+        echo "Dependency check passed"
+        npm list --production | head -20
+      displayName: 'Dependency Summary'
+
+# ==================================================================================
+# STAGE 2: BUILD
+# ==================================================================================
+- stage: BuildApplication
+  displayName: 'Build Application'
+  condition: succeeded()
+  dependsOn: ValidateAndTest
+  jobs:
+  - job: Build
+    displayName: 'Build Strapi'
+    steps:
+
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '$(NODE_VERSION)'
+
+    - task: Npm@1
+      displayName: 'npm ci'
+      inputs:
+        command: 'ci'
+
+    - task: Npm@1
+      displayName: 'npm run build (Production Build)'
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+
+    - script: |
+        echo "Build completed successfully"
+        ls -la build/ | head -10
+      displayName: 'Build Summary'
+
+# ==================================================================================
+# STAGE 3: DOCKER BUILD & PUSH
+# ==================================================================================
+- stage: DockerBuildAndPush
+  displayName: 'Docker Build and Push'
+  condition: succeeded()
+  dependsOn: BuildApplication
+  jobs:
+  - job: DockerBuild
+    displayName: 'Build and Push Docker Image'
+    steps:
+
+    - checkout: self
+      fetchDepth: 0
+
+    - task: Docker@2
+      displayName: 'Build Docker Image'
+      inputs:
+        command: 'build'
+        Dockerfile: 'Dockerfile.poc'
+        tags: |
+          $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
+          $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):latest
+
+    - task: Docker@2
+      displayName: 'Push Docker Image to ACR'
+      inputs:
+        command: 'push'
+        containerRegistry: 'AzureContainerRegistry'
+        repository: '$(DOCKER_IMAGE_NAME)'
+        tags: |
+          $(DOCKER_IMAGE_TAG)
+          latest
+
+    - script: |
+        echo "Docker image pushed:"
+        echo "  $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
+        echo "  $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):latest"
+      displayName: 'Push Summary'
+
+# ==================================================================================
+# STAGE 4: DEPLOY TO POC
+# ==================================================================================
+- stage: DeployPOC
+  displayName: 'Deploy to POC Environment'
+  condition: succeeded()
+  dependsOn: DockerBuildAndPush
+  jobs:
+  - deployment: DeployBackend
+    displayName: 'Deploy Strapi to POC'
+    environment: 'POC'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - script: |
+              echo "Deployment to POC environment"
+              echo "Image: $(DOCKER_REGISTRY)/$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)"
+              echo "Environment: POC"
+              echo "Note: Actualizar con configuración específica de deploy"
+            displayName: 'Deployment Info'

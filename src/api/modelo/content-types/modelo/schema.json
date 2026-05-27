@@ -5,7 +5,7 @@
     "singularName": "modelo",
     "pluralName": "modelos",
     "displayName": "Modelo",
-    "description": "Modelos de vehículos SOUEAST"
+    "description": "Modelos de veh\u00edculos SOUEAST"
   },
   "options": {
     "draftAndPublish": true
@@ -40,7 +40,12 @@
     },
     "categoria": {
       "type": "enumeration",
-      "enum": ["SUV", "Sedán", "Pick Up", "Híbrido"],
+      "enum": [
+        "SUV",
+        "Sed\u00e1n",
+        "Pick Up",
+        "H\u00edbrido"
+      ],
       "default": "SUV"
     },
     "orden": {
@@ -51,13 +56,17 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "imagen_lateral": {
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "versiones": {
       "type": "component",
@@ -117,7 +126,9 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "news_tag": {
       "type": "string"
@@ -138,6 +149,13 @@
     },
     "cotizar_privacidad_html": {
       "type": "richtext"
+    },
+    "versiones_detalladas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::modelo-version.modelo-version",
+      "mappedBy": "modelo",
+      "description": "Versiones detalladas de este modelo con precios y especificaciones"
     }
   }
 }

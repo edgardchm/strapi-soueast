@@ -1,0 +1,4 @@
+nombre,modelo_nombre,precio_lista,bono_marca,bono_financiamiento,transmision,motor,combustible,potencia,torque,activo
+Sportage 1.5L Turbo 6MT,Sportage,25000000,500000,1000000,6MT,1.5L Turbo,Gasolina,150,200,true
+Sportage 2.0 Diésel AWD,Sportage,28000000,600000,0,7DCT,2.0L Diésel,Diésel,185,420,yes
+Sportage 2.0T GDI AWD,Sportage,32000000,700000,500000,8AT,2.0T GDI,Gasolina,220,300,true

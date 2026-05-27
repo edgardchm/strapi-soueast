@@ -1,0 +1,87 @@
+{
+  "kind": "collectionType",
+  "collectionName": "import_logs",
+  "info": {
+    "singularName": "import-log",
+    "pluralName": "import-logs",
+    "displayName": "Log de Importación",
+    "description": "Registro de auditoría de todas las importaciones de datos"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "import_id": {
+      "type": "uid",
+      "required": true,
+      "unique": true,
+      "description": "ID único de la importación"
+    },
+    "usuario": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "description": "Usuario que ejecutó la importación"
+    },
+    "nombre_archivo": {
+      "type": "string",
+      "required": true,
+      "description": "Nombre del archivo importado"
+    },
+    "tipo_importacion": {
+      "type": "enumeration",
+      "enum": ["modelo-version", "sucursal", "noticia", "otro"],
+      "description": "Tipo de colección que se importó"
+    },
+    "estado": {
+      "type": "enumeration",
+      "enum": ["preview", "confirmada", "procesando", "completada", "fallida", "parcial"],
+      "default": "preview",
+      "description": "Estado actual de la importación"
+    },
+    "total_filas": {
+      "type": "integer",
+      "default": 0,
+      "description": "Total de filas en el archivo"
+    },
+    "filas_validas": {
+      "type": "integer",
+      "default": 0,
+      "description": "Filas que pasaron validación"
+    },
+    "filas_con_error": {
+      "type": "integer",
+      "default": 0,
+      "description": "Filas con errores de validación"
+    },
+    "registros_creados": {
+      "type": "integer",
+      "default": 0,
+      "description": "Registros nuevos creados"
+    },
+    "registros_actualizados": {
+      "type": "integer",
+      "default": 0,
+      "description": "Registros existentes actualizados"
+    },
+    "registros_omitidos": {
+      "type": "integer",
+      "default": 0,
+      "description": "Registros omitidos"
+    },
+    "errores": {
+      "type": "json",
+      "description": "Array de errores por fila"
+    },
+    "metadata": {
+      "type": "json",
+      "description": "Información adicional de la importación"
+    },
+    "fecha_confirmacion": {
+      "type": "datetime",
+      "description": "Fecha cuando se confirmó la importación"
+    }
+  }
+}
