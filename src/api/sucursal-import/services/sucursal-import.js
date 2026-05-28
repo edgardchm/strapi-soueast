@@ -16,23 +16,24 @@ module.exports = {
         throw new Error('No se encontró ninguna hoja en el archivo Excel');
       }
 
-      // 2. Obtener headers
-      const headerRow = worksheet.getRow(1);
-      if (!headerRow || !headerRow.values || headerRow.values.length === 0) {
-        throw new Error('La primera fila está vacía o no contiene headers');
+      // 2. Detectar automáticamente la fila que contiene headers
+      const { headerRowNumber, headerValues } = this.detectHeaderRow(worksheet);
+
+      if (!headerRowNumber) {
+        throw new Error('No se encontró una fila con headers válidos en el archivo');
       }
 
-      const headers = headerRow.values
-        .slice(1) // Ignorar primera posición (índice 0)
-        .map(h => this.normalizeHeader(h));
+      // Normalizar headers y crear mapping
+      const normalizedHeaders = headerValues.map(h => this.normalizeHeader(h));
+      const fieldMapping = this.buildFieldMapping(normalizedHeaders, headerValues);
 
-      // 3. Procesar filas
+      // 3. Procesar filas (solo después del header row)
       const rows = [];
       const errors = [];
       let emptyRowCount = 0;
 
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; // Skip header row
+        if (rowNumber <= headerRowNumber) return; // Skip header row y filas anteriores
 
         const values = row.values ? row.values.slice(1) : [];
 
@@ -43,16 +44,16 @@ module.exports = {
           return;
         }
 
-        // Mapear valores a headers
+        // Mapear valores a headers normalizados
         const rowData = {};
-        headers.forEach((header, idx) => {
+        normalizedHeaders.forEach((header, idx) => {
           if (idx < values.length) {
             rowData[header] = this.normalizeValue(values[idx], header);
           }
         });
 
-        // Mapear a schema de sucursal
-        const mapped = this.mapToSucursalSchema(rowData);
+        // Mapear a schema de sucursal usando field mapping
+        const mapped = this.mapRowDataToSucursal(rowData, fieldMapping);
 
         // Validar
         const fieldErrors = this.validateRow(mapped);
@@ -77,17 +78,18 @@ module.exports = {
       });
 
       // 4. Construir preview
-      const validRows = rows.length;
-      const invalidRows = errors.length > 0 ? Math.max(...errors.map(e => e.rowNumber)) - headerRow + 1 : 0;
-      const totalRows = worksheet.rowCount - 1; // Restar header row
-
       const preview = {
         summary: {
-          totalRows,
-          validRows,
-          invalidRows: errors.length > 0 ? new Set(errors.map(e => e.rowNumber)).size : 0,
+          totalRows: worksheet.rowCount - headerRowNumber, // Total desde después del header
+          validRows: rows.length,
+          invalidRows: new Set(errors.map(e => e.rowNumber)).size,
           warnings: emptyRowCount,
         },
+        detectedHeaderRow: headerRowNumber,
+        detectedHeaders: headerValues,
+        fieldMapping: Object.fromEntries(
+          Object.entries(fieldMapping).filter(([k, v]) => v !== null)
+        ),
         rows,
         errors,
       };
@@ -96,6 +98,120 @@ module.exports = {
     } catch (error) {
       throw new Error(`Error al procesar archivo: ${error.message}`);
     }
+  },
+
+  detectHeaderRow(worksheet) {
+    /**
+     * Detecta automáticamente la fila que contiene headers
+     * Busca una fila que contenga palabras clave como: sucursal, latitud, longitud, region, comuna
+     */
+    const keywordPatterns = [
+      'sucursal', 'nombre', 'latitud', 'latitude', 'longitud', 'longitude',
+      'region', 'región', 'comuna', 'ciudad', 'dirección', 'direccion'
+    ];
+
+    for (let rowNum = 1; rowNum <= Math.min(20, worksheet.rowCount); rowNum++) {
+      const row = worksheet.getRow(rowNum);
+      if (!row || !row.values || row.values.length < 2) continue;
+
+      const headers = row.values.slice(1).map(h =>
+        (h ? h.toString().toLowerCase().trim() : '')
+      );
+
+      // Contar cuántas palabras clave están presentes
+      const keywordMatches = headers.filter(h =>
+        keywordPatterns.some(kw => h.includes(kw))
+      ).length;
+
+      // Si encontramos al menos 3 palabras clave, es probable que sea la fila de headers
+      if (keywordMatches >= 3) {
+        return {
+          headerRowNumber: rowNum,
+          headerValues: row.values.slice(1).map(v => v ? v.toString() : ''),
+        };
+      }
+    }
+
+    // Si no encuentra headers automáticamente, asumir fila 1
+    const firstRow = worksheet.getRow(1);
+    if (firstRow && firstRow.values && firstRow.values.length > 1) {
+      return {
+        headerRowNumber: 1,
+        headerValues: firstRow.values.slice(1).map(v => v ? v.toString() : ''),
+      };
+    }
+
+    return { headerRowNumber: null, headerValues: [] };
+  },
+
+  buildFieldMapping(normalizedHeaders, originalHeaders) {
+    /**
+     * Construye un mapping de headers normalizados a campos del schema
+     * Basado en las palabras clave detectadas
+     */
+    const mapping = {};
+
+    const headerMap = {
+      // Requeridos
+      'sucursal': 'nombre',
+      'nombre': 'nombre',
+      'name': 'nombre',
+      'direccion': 'direccion',
+      'dirección': 'direccion',
+      'address': 'direccion',
+      'comuna': 'comuna',
+      'ciudad': 'comuna',
+      'city': 'comuna',
+      'region': 'region',
+      'región': 'region',
+      'state': 'region',
+      'provincia': 'region',
+      'lat': 'lat',
+      'latitude': 'lat',
+      'latitud': 'lat',
+      'lng': 'lng',
+      'longitude': 'lng',
+      'longitud': 'lng',
+      'lon': 'lng',
+
+      // Opcionales
+      'horario': 'horario',
+      'horarios': 'horario',
+      'hours': 'horario',
+      'schedule': 'horario',
+      'telefono': 'telefono',
+      'teléfono': 'telefono',
+      'phone': 'telefono',
+      'fono': 'telefono',
+      'email': 'email',
+      'correo': 'email',
+      'e_mail': 'email',
+      'contacto': 'email', // Mapear contacto a email si contiene @
+      'correcto_contacto': 'email',
+      'tipo_label': 'tipo_label',
+      'tipo': 'tipo_label',
+      'type': 'tipo_label',
+      'label': 'tipo_label',
+
+      // Campos Excel extras (ignorar por ahora)
+      'cargo': null,
+      'flag_venta': null,
+      'flag_repuesto': null,
+      'flag_servicio_tecnico': null,
+      'telefono_ventas': null,
+      'telefono_repuestos': null,
+      'telefono_servicio': null,
+      'para': null,
+      'con_copia': null,
+      'con_copia_oculta': null,
+    };
+
+    normalizedHeaders.forEach((normHeader, idx) => {
+      const field = headerMap[normHeader] || null;
+      mapping[originalHeaders[idx] || normHeader] = field;
+    });
+
+    return mapping;
   },
 
   normalizeHeader(header) {
@@ -138,7 +254,47 @@ module.exports = {
     return String(value).trim();
   },
 
+  mapRowDataToSucursal(rowData, fieldMapping) {
+    /**
+     * Mapea datos de una fila al schema de sucursal
+     * usando el field mapping detectado automáticamente
+     */
+    const mapped = {};
+
+    Object.entries(fieldMapping).forEach(([originalHeader, schemaField]) => {
+      if (!schemaField || !rowData[this.normalizeHeader(originalHeader)]) {
+        return;
+      }
+
+      const normalizedHeader = this.normalizeHeader(originalHeader);
+      const value = rowData[normalizedHeader];
+
+      if (value === null || value === undefined) {
+        return;
+      }
+
+      // Mapear a campo del schema
+      if (schemaField === 'lat' || schemaField === 'lng') {
+        mapped[schemaField] = value !== null ? parseFloat(value) : null;
+      } else if (schemaField === 'email') {
+        // Validar formato email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+          mapped[schemaField] = value;
+        }
+      } else {
+        mapped[schemaField] = value;
+      }
+    });
+
+    return mapped;
+  },
+
   mapToSucursalSchema(rowData) {
+    /**
+     * Método legacy: mapea usando patrones de nombres conocidos
+     * Se mantiene para compatibilidad con código existente
+     */
     const mapped = {};
 
     // Variantes de campo "nombre"
