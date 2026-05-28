@@ -79,23 +79,31 @@ module.exports = {
 
       // 4. Detectar duplicados dentro del mismo archivo
       const duplicateWarnings = this.detectDuplicates(rows);
+      const duplicateRowNumbers = new Set(duplicateWarnings.map(w => w.rowNumber));
 
-      // 5. Calcular resumen de errores
-      const errorSummary = this.buildErrorSummary(errors);
+      // 5. REMOVER del array rows cualquier fila que sea duplicada
+      // Una fila duplicada no debe procesarse en confirm
+      const validRowsFiltered = rows.filter(row => !duplicateRowNumbers.has(row.rowNumber));
+
+      // 6. Agregar duplicados a errors
+      const allErrors = [...errors, ...duplicateWarnings];
+
+      // 7. Calcular resumen de errores
+      const errorSummary = this.buildErrorSummary(allErrors);
       const duplicateRows = duplicateWarnings.length;
-      const coordinateErrors = errors.filter(e =>
+      const coordinateErrors = allErrors.filter(e =>
         e.field === 'lat' || e.field === 'lng'
       ).length;
-      const missingRequiredErrors = errors.filter(e =>
+      const missingRequiredErrors = allErrors.filter(e =>
         e.message.includes('Campo requerido')
       ).length;
 
-      // 6. Construir preview
+      // 8. Construir preview
       const preview = {
         summary: {
           totalRows: worksheet.rowCount - headerRowNumber, // Total desde después del header
-          validRows: rows.length,
-          invalidRows: new Set(errors.map(e => e.rowNumber)).size,
+          validRows: validRowsFiltered.length, // Sin duplicados
+          invalidRows: new Set(allErrors.map(e => e.rowNumber)).size,
           warnings: emptyRowCount,
           duplicateRows,
           coordinateErrors,
@@ -107,8 +115,8 @@ module.exports = {
         fieldMapping: Object.fromEntries(
           Object.entries(fieldMapping).filter(([k, v]) => v !== null)
         ),
-        rows,
-        errors: [...errors, ...duplicateWarnings],
+        rows: validRowsFiltered, // Solo filas válidas, sin duplicados
+        errors: allErrors,
       };
 
       return preview;
