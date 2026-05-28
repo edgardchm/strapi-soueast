@@ -11,5 +11,14 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'POST',
+      path: '/sucursal-import/confirm',
+      handler: 'sucursal-import.confirm',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

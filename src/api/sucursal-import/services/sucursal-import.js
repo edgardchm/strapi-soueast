@@ -274,4 +274,189 @@ module.exports = {
 
     return errors;
   },
+
+  async confirm(file) {
+    try {
+      // 1. Obtener preview (parseo + validación)
+      const preview = await this.preview(file);
+
+      // 2. Inicializar acumuladores
+      const created = [];
+      const updated = [];
+      const skipped = [];
+      const errors = [];
+
+      // 3. Procesar solo filas válidas
+      for (const row of preview.rows) {
+        try {
+          const rowData = row.data;
+          const rowNumber = row.rowNumber;
+
+          // 3a. Validar que existan todos los campos requeridos
+          const required = ['nombre', 'direccion', 'comuna', 'region', 'lat', 'lng'];
+          const missingRequired = required.filter(field => !rowData[field]);
+
+          if (missingRequired.length > 0) {
+            errors.push({
+              rowNumber,
+              field: 'validation',
+              message: `Campos requeridos faltantes: ${missingRequired.join(', ')}`,
+            });
+            continue;
+          }
+
+          // 3b. Preparar datos para Strapi (campos requeridos + opcionales válidos)
+          // NOTA: NO incluir slug (Strapi lo genera automáticamente desde nombre)
+          // NOTA: NO incluir imagen_portada, orden (no vienen en Excel)
+          const strapiData = {
+            nombre: rowData.nombre,
+            direccion: rowData.direccion,
+            comuna: rowData.comuna,
+            region: rowData.region,
+            lat: rowData.lat,
+            lng: rowData.lng,
+          };
+
+          // Agregar campos opcionales solo si tienen valor
+          if (rowData.horario) {
+            strapiData.horario = rowData.horario;
+          }
+
+          if (rowData.tipo_label) {
+            strapiData.tipo_label = rowData.tipo_label;
+          }
+
+          if (rowData.telefono) {
+            strapiData.telefono = rowData.telefono;
+          }
+
+          if (rowData.email) {
+            // Validar email básicamente
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(rowData.email)) {
+              strapiData.email = rowData.email;
+            }
+          }
+
+          // 4. Buscar sucursal existente por nombre + comuna (clave de búsqueda)
+          // NOTA: Buscamos por nombre + comuna porque slug es autogenerado por Strapi
+          // LIMITACIÓN: Si el nombre cambia entre imports, creará un nuevo registro
+          // RECOMENDACIÓN FASE FUTURA: Usar identificador estable como código_sucursal, ID interno, o dirección + comuna
+          const existingSucursales = await strapi.entityService.findMany(
+            'api::sucursal.sucursal',
+            {
+              filters: {
+                nombre: rowData.nombre,
+                comuna: rowData.comuna,
+              },
+              limit: 1,
+            }
+          );
+
+          if (existingSucursales && existingSucursales.length > 0) {
+            // 5. ACTUALIZAR existente
+            const id = existingSucursales[0].id;
+            const existingSlug = existingSucursales[0].slug;
+
+            // Limpiar datos para update: no sobrescribir con vacíos
+            const updateData = this.cleanDataForUpdate(strapiData);
+
+            await strapi.entityService.update('api::sucursal.sucursal', id, {
+              data: updateData,
+            });
+
+            updated.push({
+              rowNumber,
+              id,
+              slug: existingSlug,
+            });
+          } else {
+            // 5. CREAR nuevo
+            const newSucursal = await strapi.entityService.create(
+              'api::sucursal.sucursal',
+              {
+                data: strapiData,
+              }
+            );
+
+            created.push({
+              rowNumber,
+              id: newSucursal.id,
+              slug: newSucursal.slug,
+            });
+          }
+        } catch (rowError) {
+          strapi.log.error(`Error procesando fila ${row.rowNumber}:`, rowError);
+          errors.push({
+            rowNumber: row.rowNumber,
+            field: 'general',
+            message: `Error al guardar: ${rowError.message}`,
+          });
+        }
+      }
+
+      // 6. Procesar filas inválidas (skipped)
+      for (const error of preview.errors) {
+        skipped.push({
+          rowNumber: error.rowNumber,
+          reason: `Campo "${error.field}": ${error.message}`,
+        });
+      }
+
+      // 7. Construir reporte
+      const result = {
+        summary: {
+          totalRows: preview.summary.totalRows,
+          validRows: preview.summary.validRows,
+          invalidRows: preview.summary.invalidRows,
+          created: created.length,
+          updated: updated.length,
+          skipped: skipped.length,
+          errors: errors.length,
+        },
+        created,
+        updated,
+        skipped,
+        errors,
+      };
+
+      return result;
+    } catch (error) {
+      throw new Error(`Error al procesar confirmación: ${error.message}`);
+    }
+  },
+
+  cleanDataForUpdate(data) {
+    /**
+     * Filtra datos para update: no incluir campos vacíos
+     * Esto evita sobrescribir valores existentes con null/undefined/''
+     */
+    return Object.fromEntries(
+      Object.entries(data).filter(([_, value]) =>
+        value !== undefined && value !== null && value !== ''
+      )
+    );
+  },
+
+  async generateSlug(nombre) {
+    /**
+     * Genera slug de manera similar a Strapi UID
+     * Strapi usa: lowercase, reemplaza espacios por -, remueve caracteres especiales
+     */
+    if (!nombre) return '';
+
+    return nombre
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-') // Espacios por guiones
+      .replace(/[áàâä]/g, 'a')
+      .replace(/[éèêë]/g, 'e')
+      .replace(/[íìîï]/g, 'i')
+      .replace(/[óòôö]/g, 'o')
+      .replace(/[úùûü]/g, 'u')
+      .replace(/ñ/g, 'n')
+      .replace(/[^a-z0-9\-]/g, '') // Solo alfanuméricos y guiones
+      .replace(/^-+|-+$/g, '') // Remover guiones al inicio/final
+      .replace(/-+/g, '-'); // Colapsar múltiples guiones
+  },
 };
