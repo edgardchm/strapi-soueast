@@ -77,21 +77,38 @@ module.exports = {
         }
       });
 
-      // 4. Construir preview
+      // 4. Detectar duplicados dentro del mismo archivo
+      const duplicateWarnings = this.detectDuplicates(rows);
+
+      // 5. Calcular resumen de errores
+      const errorSummary = this.buildErrorSummary(errors);
+      const duplicateRows = duplicateWarnings.length;
+      const coordinateErrors = errors.filter(e =>
+        e.field === 'lat' || e.field === 'lng'
+      ).length;
+      const missingRequiredErrors = errors.filter(e =>
+        e.message.includes('Campo requerido')
+      ).length;
+
+      // 6. Construir preview
       const preview = {
         summary: {
           totalRows: worksheet.rowCount - headerRowNumber, // Total desde después del header
           validRows: rows.length,
           invalidRows: new Set(errors.map(e => e.rowNumber)).size,
           warnings: emptyRowCount,
+          duplicateRows,
+          coordinateErrors,
+          missingRequiredErrors,
         },
+        errorSummary,
         detectedHeaderRow: headerRowNumber,
         detectedHeaders: headerValues,
         fieldMapping: Object.fromEntries(
           Object.entries(fieldMapping).filter(([k, v]) => v !== null)
         ),
         rows,
-        errors,
+        errors: [...errors, ...duplicateWarnings],
       };
 
       return preview;
@@ -400,19 +417,33 @@ module.exports = {
 
     // Validar números en lat/lng
     if (rowData.lat !== null && rowData.lat !== undefined) {
-      if (isNaN(parseFloat(rowData.lat))) {
+      const lat = parseFloat(rowData.lat);
+      if (isNaN(lat)) {
         errors.push({
           field: 'lat',
           message: `Latitud no es un número válido: ${rowData.lat}`,
+        });
+      } else if (lat < -90 || lat > 90) {
+        // Validar rango: latitud debe estar entre -90 y 90
+        errors.push({
+          field: 'lat',
+          message: `Latitud fuera de rango válido (-90 a 90): ${lat}`,
         });
       }
     }
 
     if (rowData.lng !== null && rowData.lng !== undefined) {
-      if (isNaN(parseFloat(rowData.lng))) {
+      const lng = parseFloat(rowData.lng);
+      if (isNaN(lng)) {
         errors.push({
           field: 'lng',
           message: `Longitud no es un número válido: ${rowData.lng}`,
+        });
+      } else if (lng < -180 || lng > 180) {
+        // Validar rango: longitud debe estar entre -180 y 180
+        errors.push({
+          field: 'lng',
+          message: `Longitud fuera de rango válido (-180 a 180): ${lng}`,
         });
       }
     }
@@ -429,6 +460,51 @@ module.exports = {
     }
 
     return errors;
+  },
+
+  detectDuplicates(rows) {
+    /**
+     * Detecta duplicados dentro del mismo archivo basado en nombre + comuna
+     * Devuelve warnings para la segunda y posteriores ocurrencias
+     */
+    const seen = new Map(); // Map de "nombre|comuna" → rowNumber
+    const duplicateWarnings = [];
+
+    for (const row of rows) {
+      const { nombre, comuna } = row.data;
+      if (!nombre || !comuna) continue;
+
+      const key = `${nombre}|${comuna}`;
+
+      if (seen.has(key)) {
+        // Es un duplicado
+        const firstRow = seen.get(key);
+        duplicateWarnings.push({
+          rowNumber: row.rowNumber,
+          field: 'duplicado',
+          message: `Sucursal duplicada en el archivo. Primera ocurrencia: fila ${firstRow}.`,
+        });
+      } else {
+        // Primera ocurrencia
+        seen.set(key, row.rowNumber);
+      }
+    }
+
+    return duplicateWarnings;
+  },
+
+  buildErrorSummary(errors) {
+    /**
+     * Agrupa errores por campo para resumen
+     */
+    const summary = {};
+
+    for (const error of errors) {
+      const field = error.field;
+      summary[field] = (summary[field] || 0) + 1;
+    }
+
+    return summary;
   },
 
   async confirm(file) {
