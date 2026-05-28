@@ -1,0 +1,6 @@
+nombre,direccion,comuna,region,lat,lng,telefono,email,horario,tipo_label
+Sucursal Centro Santiago,Av. Providencia 1234,Santiago,Metropolitana,-33.4203,-70.5707,+56 2 1234 5678,centro@soueast.cl,Lunes a Viernes 9:00-18:00,Sala de ventas
+Sucursal Estación Central,Calle 5 de Abril 567,Estación Central,Metropolitana,-33.4515,-70.6801,+56 2 2345 6789,estacion@soueast.cl,Lunes a Sábado 9:00-19:00,Servicio Técnico
+Showroom Exclusivo Las Condes,Av. El Golf 345,Las Condes,Metropolitana,-33.4069,-70.5189,+56 2 3456 7890,showroom@soueast.cl,Martes a Domingo 10:00-20:00,Showroom Exclusivo
+Sucursal Valparaíso,Calle Esmeralda 234,Valparaíso,Valparaíso,-33.0458,-71.6291,+56 32 1234 567,valparaiso@soueast.cl,Lunes a Viernes 8:30-17:30,Sala de ventas
+Sucursal Concepción,Barrio Universitario 890,Concepción,Bío Bío,-36.8201,-73.0445,+56 41 2345 678,concepcion@soueast.cl,Lunes a Viernes 9:00-18:00,Servicio Técnico
