@@ -477,4 +477,135 @@ module.exports = {
 
     return summary;
   },
+
+  async confirmPrecioDesde(file) {
+    /**
+     * Confirma y actualiza precio_desde de modelos
+     * basado en el menor precio_final por modelo del Excel
+     */
+    try {
+      // 1. Obtener preview (parseo + validación)
+      const preview = await this.preview(file);
+
+      // 2. Si no hay filas válidas, reportar
+      if (preview.summary.validRows === 0) {
+        return {
+          summary: {
+            totalRows: preview.summary.totalRows,
+            validRows: 0,
+            modelsDetected: 0,
+            updated: 0,
+            skipped: preview.summary.invalidRows,
+            errors: 0,
+          },
+          updated: [],
+          skipped: [],
+          errors: [],
+        };
+      }
+
+      // 3. Agrupar filas por modelo
+      const modeloMap = new Map(); // modelo.nombre -> [{ precio_final, version, ... }]
+
+      for (const row of preview.rows) {
+        const { modelo, precio_final, version } = row.data;
+        if (!modelo) continue;
+
+        if (!modeloMap.has(modelo)) {
+          modeloMap.set(modelo, []);
+        }
+        modeloMap.get(modelo).push({
+          version,
+          precio_final,
+          precio_lista: row.data.precio_lista,
+          bono_marca: row.data.bono_marca,
+          bono_financiamiento: row.data.bono_financiamiento,
+        });
+      }
+
+      // 4. Procesar cada modelo
+      const updated = [];
+      const skipped = [];
+      const errors = [];
+
+      for (const [modeloNombre, versiones] of modeloMap.entries()) {
+        try {
+          // Calcular menor precio_final
+          let menorPrecio = Math.min(...versiones.map(v => v.precio_final || 999999999));
+
+          // Validar precio
+          if (!menorPrecio || menorPrecio <= 0) {
+            skipped.push({
+              modelo: modeloNombre,
+              reason: `Precio final inválido o no encontrado`,
+            });
+            continue;
+          }
+
+          // 4a. Buscar modelo existente en Strapi por nombre
+          const existingModelos = await strapi.entityService.findMany(
+            'api::modelo.modelo',
+            {
+              filters: {
+                nombre: modeloNombre,
+              },
+              limit: 1,
+            }
+          );
+
+          if (!existingModelos || existingModelos.length === 0) {
+            skipped.push({
+              modelo: modeloNombre,
+              reason: `Modelo no encontrado en Strapi`,
+            });
+            continue;
+          }
+
+          // 4b. Actualizar precio_desde
+          const id = existingModelos[0].id;
+          const precioAnterior = existingModelos[0].precio_desde || null;
+
+          await strapi.entityService.update('api::modelo.modelo', id, {
+            data: {
+              precio_desde: menorPrecio,
+              publishedAt: new Date(),
+            },
+          });
+
+          updated.push({
+            modelo: modeloNombre,
+            modeloId: id,
+            precio_desde_anterior: precioAnterior,
+            precio_desde_nuevo: menorPrecio,
+            versiones_consideradas: versiones.length,
+          });
+        } catch (modeloError) {
+          strapi.log.error(`Error procesando modelo ${modeloNombre}:`, modeloError);
+          errors.push({
+            modelo: modeloNombre,
+            message: `Error al actualizar: ${modeloError.message}`,
+          });
+        }
+      }
+
+      // 5. Construir reporte
+      const result = {
+        summary: {
+          totalRows: preview.summary.totalRows,
+          validRows: preview.summary.validRows,
+          modelsDetected: modeloMap.size,
+          updated: updated.length,
+          skipped: skipped.length,
+          errors: errors.length,
+        },
+        updated,
+        skipped,
+        errors,
+      };
+
+      return result;
+    } catch (error) {
+      throw new Error(`Error al procesar confirmación: ${error.message}`);
+    }
+  },
 };

@@ -12,5 +12,15 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'POST',
+      path: '/modelo-import/confirm-precio-desde',
+      handler: 'modelo-import.confirmPrecioDesde',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };
