@@ -604,6 +604,9 @@ module.exports = {
             // Limpiar datos para update: no sobrescribir con vacíos
             const updateData = this.cleanDataForUpdate(strapiData);
 
+            // Publicar el registro (agregar publishedAt)
+            updateData.publishedAt = new Date();
+
             await strapi.entityService.update('api::sucursal.sucursal', id, {
               data: updateData,
             });
@@ -618,7 +621,10 @@ module.exports = {
             const newSucursal = await strapi.entityService.create(
               'api::sucursal.sucursal',
               {
-                data: strapiData,
+                data: {
+                  ...strapiData,
+                  publishedAt: new Date(),
+                },
               }
             );
 
