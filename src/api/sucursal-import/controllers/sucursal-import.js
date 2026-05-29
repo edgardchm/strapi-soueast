@@ -49,6 +49,18 @@ module.exports = {
 
   async confirm(ctx) {
     try {
+      // 0. Validar token secreto para proteger confirm
+      const importToken = ctx.request.headers['x-import-token'];
+      const expectedToken = process.env.IMPORT_SECRET_TOKEN;
+
+      if (!expectedToken) {
+        return ctx.internalServerError('IMPORT_SECRET_TOKEN no configurado en el servidor');
+      }
+
+      if (!importToken || importToken !== expectedToken) {
+        return ctx.forbidden('No autorizado para confirmar importación. Token inválido o ausente.');
+      }
+
       // 1. Validar que venga archivo
       if (!ctx.request.files || !ctx.request.files.file) {
         return ctx.badRequest('Se requiere un archivo Excel');
