@@ -478,6 +478,23 @@ module.exports = {
     return summary;
   },
 
+  resolvePrecioFinal(data) {
+    /**
+     * Resuelve el precio_final
+     * Primero intenta usar precio_final directo
+     * Si no existe, calcula: precio_lista - bono_marca - bono_financiamiento
+     */
+    const precioFinal = Number(data.precio_final || 0);
+    if (precioFinal > 0) return precioFinal;
+
+    const precioLista = Number(data.precio_lista || 0);
+    const bonoMarca = Number(data.bono_marca || 0);
+    const bonoFinanciamiento = Number(data.bono_financiamiento || 0);
+
+    const calculated = precioLista - bonoMarca - bonoFinanciamiento;
+    return calculated > 0 ? calculated : null;
+  },
+
   async confirmPrecioDesde(file) {
     /**
      * Confirma y actualiza precio_desde de modelos
@@ -487,63 +504,87 @@ module.exports = {
       // 1. Obtener preview (parseo + validación)
       const preview = await this.preview(file);
 
-      // 2. Si no hay filas válidas, reportar
-      if (preview.summary.validRows === 0) {
+      // 2. Validar que preview es válido
+      if (!preview || !Array.isArray(preview.rows)) {
+        throw new Error('Preview inválido: no se encontraron filas válidas');
+      }
+
+      // 3. Obtener solo filas válidas
+      const validRows = Array.isArray(preview.rows) ? preview.rows.filter(row => row.status === 'valid') : [];
+
+      if (validRows.length === 0) {
         return {
           summary: {
-            totalRows: preview.summary.totalRows,
+            totalRows: preview.summary?.totalRows || 0,
             validRows: 0,
             modelsDetected: 0,
             updated: 0,
-            skipped: preview.summary.invalidRows,
+            skipped: preview.summary?.invalidRows || 0,
             errors: 0,
           },
           updated: [],
           skipped: [],
-          errors: [],
+          errors: [
+            {
+              field: 'rows',
+              message: 'No hay filas válidas para procesar',
+            },
+          ],
         };
       }
 
-      // 3. Agrupar filas por modelo
-      const modeloMap = new Map(); // modelo.nombre -> [{ precio_final, version, ... }]
+      // 4. Agrupar filas válidas por modelo
+      const modelGroups = new Map(); // modelo -> [{ rowNumber, version, precio_final, ... }]
 
-      for (const row of preview.rows) {
-        const { modelo, precio_final, version } = row.data;
+      for (const row of validRows) {
+        const data = row.data;
+        const modelo = String(data.modelo || '').trim();
+
         if (!modelo) continue;
 
-        if (!modeloMap.has(modelo)) {
-          modeloMap.set(modelo, []);
+        // Resolver precio_final (directo o calculado)
+        const precioFinal = this.resolvePrecioFinal(data);
+
+        if (!precioFinal || precioFinal <= 0) {
+          // Precio inválido, reportar error y continuar
+          continue;
         }
-        modeloMap.get(modelo).push({
-          version,
-          precio_final,
-          precio_lista: row.data.precio_lista,
-          bono_marca: row.data.bono_marca,
-          bono_financiamiento: row.data.bono_financiamiento,
+
+        if (!modelGroups.has(modelo)) {
+          modelGroups.set(modelo, []);
+        }
+
+        modelGroups.get(modelo).push({
+          rowNumber: row.rowNumber,
+          modelo,
+          version: data.version,
+          precio_final: precioFinal,
+          data,
         });
       }
 
-      // 4. Procesar cada modelo
+      // 5. Procesar cada modelo agrupado
       const updated = [];
       const skipped = [];
       const errors = [];
 
-      for (const [modeloNombre, versiones] of modeloMap.entries()) {
+      for (const [modeloNombre, versionesGrupo] of modelGroups.entries()) {
         try {
-          // Calcular menor precio_final
-          let menorPrecio = Math.min(...versiones.map(v => v.precio_final || 999999999));
+          // Calcular menor precio_final para este modelo
+          const preciosFinales = versionesGrupo.map(v => v.precio_final || 999999999);
+          const menorPrecio = Math.min(...preciosFinales);
 
-          // Validar precio
-          if (!menorPrecio || menorPrecio <= 0) {
+          if (!menorPrecio || menorPrecio <= 0 || menorPrecio === 999999999) {
             skipped.push({
               modelo: modeloNombre,
-              reason: `Precio final inválido o no encontrado`,
+              reason: 'Precio final inválido en todas las versiones',
             });
             continue;
           }
 
-          // 4a. Buscar modelo existente en Strapi por nombre
-          const existingModelos = await strapi.entityService.findMany(
+          // 5a. Buscar modelo existente en Strapi por nombre exacto
+          let existingModelo = null;
+          const exactMatch = await strapi.entityService.findMany(
             'api::modelo.modelo',
             {
               filters: {
@@ -553,22 +594,42 @@ module.exports = {
             }
           );
 
-          if (!existingModelos || existingModelos.length === 0) {
+          if (exactMatch && exactMatch.length > 0) {
+            existingModelo = exactMatch[0];
+          } else {
+            // 5b. Si no encuentra exacto, intentar búsqueda normalizada
+            const allModelos = await strapi.entityService.findMany(
+              'api::modelo.modelo',
+              {
+                fields: ['id', 'nombre', 'precio_desde'],
+                limit: 100,
+              }
+            );
+
+            const modeloNormalized = modeloNombre.toLowerCase().trim();
+            for (const m of allModelos) {
+              if ((m.nombre || '').toLowerCase().trim() === modeloNormalized) {
+                existingModelo = m;
+                break;
+              }
+            }
+          }
+
+          if (!existingModelo) {
             skipped.push({
               modelo: modeloNombre,
-              reason: `Modelo no encontrado en Strapi`,
+              reason: 'Modelo no encontrado en Strapi',
             });
             continue;
           }
 
-          // 4b. Actualizar precio_desde
-          const id = existingModelos[0].id;
-          const precioAnterior = existingModelos[0].precio_desde || null;
+          // 5c. Actualizar solo precio_desde
+          const id = existingModelo.id;
+          const precioAnterior = existingModelo.precio_desde || null;
 
           await strapi.entityService.update('api::modelo.modelo', id, {
             data: {
               precio_desde: menorPrecio,
-              publishedAt: new Date(),
             },
           });
 
@@ -577,7 +638,7 @@ module.exports = {
             modeloId: id,
             precio_desde_anterior: precioAnterior,
             precio_desde_nuevo: menorPrecio,
-            versiones_consideradas: versiones.length,
+            versiones_consideradas: versionesGrupo.length,
           });
         } catch (modeloError) {
           strapi.log.error(`Error procesando modelo ${modeloNombre}:`, modeloError);
@@ -588,12 +649,12 @@ module.exports = {
         }
       }
 
-      // 5. Construir reporte
+      // 6. Construir reporte
       const result = {
         summary: {
-          totalRows: preview.summary.totalRows,
-          validRows: preview.summary.validRows,
-          modelsDetected: modeloMap.size,
+          totalRows: preview.summary?.totalRows || 0,
+          validRows: validRows.length,
+          modelsDetected: modelGroups.size,
           updated: updated.length,
           skipped: skipped.length,
           errors: errors.length,
