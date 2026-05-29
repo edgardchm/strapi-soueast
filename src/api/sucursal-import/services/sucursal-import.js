@@ -307,6 +307,9 @@ module.exports = {
         if (emailRegex.test(value)) {
           mapped[schemaField] = value;
         }
+      } else if (schemaField === 'telefono') {
+        // Convertir telefono a string (puede venir como número desde Excel)
+        mapped[schemaField] = value !== null ? String(value) : null;
       } else {
         mapped[schemaField] = value;
       }
