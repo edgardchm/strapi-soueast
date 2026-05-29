@@ -135,26 +135,52 @@ module.exports = {
   detectHeaderRow(worksheet) {
     /**
      * Detecta automáticamente la fila que contiene headers
-     * Busca una fila que contenga palabras clave como: marca, modelo, version, precio, etc.
+     * Busca una fila que contenga palabras clave específicas
+     * Rechaza filas donde todos los valores son iguales (celdas combinadas/repetidas)
      */
-    const keywordPatterns = [
-      'marca', 'modelo', 'version', 'versión', 'precio', 'bono', 'custom'
+    const requiredHeaderKeywords = [
+      'marca',
+      'modelo',
+      'version',
+      'versión',
+      'precio_lista',
+      'precio lista',
+      'bono_marca',
+      'bono marca',
+      'bono_financiamiento',
+      'bono financiamiento',
+      'precio_final',
+      'precio final',
+      'custom'
     ];
 
     for (let rowNum = 1; rowNum <= Math.min(20, worksheet.rowCount); rowNum++) {
       const row = worksheet.getRow(rowNum);
       if (!row || !row.values || row.values.length < 2) continue;
 
-      const headers = row.values.slice(1).map(h =>
+      const values = row.values.slice(1);
+      const headers = values.map(h =>
         (h ? h.toString().toLowerCase().trim() : '')
       );
 
-      // Contar cuántas palabras clave están presentes
+      // Filtrar celdas vacías
+      const nonEmptyHeaders = headers.filter(h => h !== '');
+      if (nonEmptyHeaders.length === 0) continue;
+
+      // Rechazar fila si casi todos los valores son idénticos
+      // (indica celdas combinadas como "Reporte Precios | Reporte Precios | ...")
+      const uniqueValues = new Set(nonEmptyHeaders);
+      if (uniqueValues.size <= 1) {
+        // Solo 1 valor único repetido, no es un header row válido
+        continue;
+      }
+
+      // Contar cuántas palabras clave requeridas están presentes
       const keywordMatches = headers.filter(h =>
-        keywordPatterns.some(kw => h.includes(kw))
+        requiredHeaderKeywords.some(kw => h.includes(kw))
       ).length;
 
-      // Si encontramos al menos 3 palabras clave, es probable que sea la fila de headers
+      // Si encontramos al menos 3 keywords requeridos, es la fila de headers
       if (keywordMatches >= 3) {
         return {
           headerRowNumber: rowNum,
@@ -163,15 +189,7 @@ module.exports = {
       }
     }
 
-    // Si no encuentra headers automáticamente, asumir fila 1
-    const firstRow = worksheet.getRow(1);
-    if (firstRow && firstRow.values && firstRow.values.length > 1) {
-      return {
-        headerRowNumber: 1,
-        headerValues: firstRow.values.slice(1).map(v => v ? v.toString() : ''),
-      };
-    }
-
+    // Si no encuentra headers válidos, devolver null (no asumir fila 1)
     return { headerRowNumber: null, headerValues: [] };
   },
 
@@ -278,26 +296,37 @@ module.exports = {
 
     value = String(value)
       .trim()
-      .replace(/[​‌‍﻿]/g, '') // Caracteres invisibles
-      .replace(/\$/g, '') // Quitar $
-      .replace(/\s+/g, '') // Quitar espacios
-      .replace(/\./g, ''); // Quitar puntos (Miles en formato chileno)
+      // Caracteres invisibles (cero width, bidi marks, etc.)
+      .replace(/[​‌‍‎‏‪‫‬‭‮﻿]/g, '')
+      // Espacios (nbsp, thin space, etc.)
+      .replace(/[\s  -​]/g, '')
+      // Símbolos de moneda
+      .replace(/[\$€¥]/g, '')
+      // Puntos de miles en formato chileno
+      .replace(/\./g, '')
+      // Comas decimal (si las hay)
+      .replace(/,/g, '');
 
-    const num = parseInt(value, 10);
-    return isNaN(num) ? null : num;
+    // Extraer solo dígitos
+    const digits = value.replace(/[^0-9]/g, '');
+    const num = parseInt(digits, 10);
+    return isNaN(num) || digits === '' ? null : num;
   },
 
   mapRowDataToModelo(rowData, fieldMapping) {
     /**
      * Mapea datos de una fila al schema de modelo/precio
+     * rowData tiene keys normalizadas (precio_lista)
+     * fieldMapping tiene keys originales (Precio_Lista) -> values normalizadas (precio_lista)
      */
     const mapped = {};
 
     Object.entries(fieldMapping).forEach(([originalHeader, schemaField]) => {
-      if (!schemaField || !rowData[this.normalizeHeader(originalHeader)]) {
+      if (!schemaField) {
         return;
       }
 
+      // Obtener el valor usando header normalizado
       const normalizedHeader = this.normalizeHeader(originalHeader);
       const value = rowData[normalizedHeader];
 
@@ -306,14 +335,8 @@ module.exports = {
       }
 
       // Mapear a campo del schema
-      if (schemaField === 'marca' || schemaField === 'modelo' || schemaField === 'version' || schemaField === 'custom') {
-        mapped[schemaField] = value;
-      } else if (schemaField === 'precio_lista' || schemaField === 'bono_marca' || schemaField === 'bono_financiamiento' || schemaField === 'precio_final') {
-        // Campos numéricos de precio
-        mapped[schemaField] = value !== null ? (typeof value === 'number' ? value : parseInt(value, 10)) : null;
-      } else {
-        mapped[schemaField] = value;
-      }
+      // Los valores ya están normalizados por normalizeValue()
+      mapped[schemaField] = value;
     });
 
     return mapped;
