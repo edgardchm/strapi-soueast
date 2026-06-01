@@ -138,6 +138,12 @@
     },
     "cotizar_privacidad_html": {
       "type": "richtext"
+    },
+    "versiones_detalladas": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::modelo-version.modelo-version",
+      "mappedBy": "modelo"
     }
   }
 }
