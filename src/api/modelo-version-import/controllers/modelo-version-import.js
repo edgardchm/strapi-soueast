@@ -68,7 +68,7 @@ module.exports = {
       }
 
       const file = Array.isArray(files.file) ? files.file[0] : files.file;
-      const filename = file.originalName || file.filename;
+      const filename = file.name || file.originalName || file.filename || 'unknown';
 
       if (!filename.match(/\.(xlsx|xls)$/i)) {
         return ctx.badRequest('Invalid file format. Only .xlsx or .xls allowed.');
