@@ -122,17 +122,23 @@ module.exports = () => ({
 
   async findModeloByName(modeloNombre) {
     try {
-      const entrada = await strapi.entityService.findMany('api::modelo.modelo', {
-        filters: { nombre: modeloNombre },
-      });
+      const entrada = await global.strapi.entityService.findMany(
+        'api::modelo.modelo',
+        {
+          filters: { nombre: modeloNombre },
+        }
+      );
 
       if (entrada && entrada.length > 0) {
         return entrada[0];
       }
 
-      const todos = await strapi.entityService.findMany('api::modelo.modelo', {
-        pagination: { pageSize: 1000 },
-      });
+      const todos = await global.strapi.entityService.findMany(
+        'api::modelo.modelo',
+        {
+          pagination: { pageSize: 1000 },
+        }
+      );
 
       if (todos && todos.length > 0) {
         const normalized = modeloNombre.toLowerCase().trim();
@@ -321,7 +327,7 @@ module.exports = () => ({
       const { data, rowNumber } = row;
 
       try {
-        const existing = await strapi.entityService.findMany(
+        const existing = await global.strapi.entityService.findMany(
           'api::modelo-version.modelo-version',
           {
             filters: {
@@ -334,7 +340,7 @@ module.exports = () => ({
         const existingRecord = existing && existing.length > 0 ? existing[0] : null;
 
         if (existingRecord) {
-          const updated_record = await strapi.entityService.update(
+          const updated_record = await global.strapi.entityService.update(
             'api::modelo-version.modelo-version',
             existingRecord.id,
             {
@@ -364,7 +370,7 @@ module.exports = () => ({
             precio_final: data.precio_final,
           });
         } else {
-          const created_record = await strapi.entityService.create(
+          const created_record = await global.strapi.entityService.create(
             'api::modelo-version.modelo-version',
             {
               data: {
