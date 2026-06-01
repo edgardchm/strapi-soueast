@@ -13,7 +13,8 @@ module.exports = {
       }
 
       const file = Array.isArray(files.file) ? files.file[0] : files.file;
-      const filename = file.originalName || file.filename || 'unknown';
+      console.log('Preview: file keys =', Object.keys(file));
+      const filename = file.name || file.originalName || file.filename || 'unknown';
       console.log('Preview: filename =', filename);
 
       if (!filename.match(/\.(xlsx|xls)$/i)) {
