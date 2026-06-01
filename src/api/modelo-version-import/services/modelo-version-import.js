@@ -292,26 +292,30 @@ module.exports = () => ({
   },
 
   async confirmFile(fileBuffer, importToken) {
-    const expectedToken = process.env.IMPORT_SECRET_TOKEN;
+    try {
+      const expectedToken = process.env.IMPORT_SECRET_TOKEN;
 
-    if (!expectedToken) {
-      return {
-        ok: false,
-        type: 'modelo-version-confirm',
-        error: 'IMPORT_SECRET_TOKEN no configurado',
-      };
-    }
+      if (!expectedToken) {
+        console.error('ConfirmFile: IMPORT_SECRET_TOKEN no configurado');
+        return {
+          ok: false,
+          type: 'modelo-version-confirm',
+          error: 'IMPORT_SECRET_TOKEN no configurado',
+        };
+      }
 
-    if (!importToken || importToken !== expectedToken) {
-      return {
-        ok: false,
-        type: 'modelo-version-confirm',
-        error: 'No autorizado para confirmar importación',
-        statusCode: 403,
-      };
-    }
+      if (!importToken || importToken !== expectedToken) {
+        console.log('ConfirmFile: Token inválido o no proporcionado');
+        return {
+          ok: false,
+          type: 'modelo-version-confirm',
+          error: 'No autorizado para confirmar importación',
+          statusCode: 403,
+        };
+      }
 
-    const preview = await this.previewFile(fileBuffer);
+      console.log('ConfirmFile: Token válido, ejecutando preview...');
+      const preview = await this.previewFile(fileBuffer);
 
     if (!preview.ok) {
       return preview;
@@ -323,10 +327,13 @@ module.exports = () => ({
     const skipped = [];
     const errors = [];
 
+    console.log('ConfirmFile: Procesando', validRows.length, 'filas válidas');
+
     for (const row of validRows) {
       const { data, rowNumber } = row;
 
       try {
+        console.log(`ConfirmFile: Procesando fila ${rowNumber} - ${data.modelo_nombre} ${data.version}`);
         const existing = await global.strapi.entityService.findMany(
           'api::modelo-version.modelo-version',
           {
@@ -337,9 +344,11 @@ module.exports = () => ({
           }
         );
 
+        console.log(`ConfirmFile: Búsqueda completada, encontrados ${existing ? existing.length : 0} registros`);
         const existingRecord = existing && existing.length > 0 ? existing[0] : null;
 
         if (existingRecord) {
+          console.log(`ConfirmFile: Actualizando registro existente ID=${existingRecord.id}`);
           const updated_record = await global.strapi.entityService.update(
             'api::modelo-version.modelo-version',
             existingRecord.id,
@@ -361,6 +370,7 @@ module.exports = () => ({
             }
           );
 
+          console.log(`ConfirmFile: Actualización completada ID=${updated_record.id}`);
           updated.push({
             rowNumber,
             id: updated_record.id,
@@ -370,6 +380,7 @@ module.exports = () => ({
             precio_final: data.precio_final,
           });
         } else {
+          console.log(`ConfirmFile: Creando nuevo registro para ${data.modelo_nombre} ${data.version}`);
           const created_record = await global.strapi.entityService.create(
             'api::modelo-version.modelo-version',
             {
@@ -390,6 +401,7 @@ module.exports = () => ({
             }
           );
 
+          console.log(`ConfirmFile: Creación completada ID=${created_record.id}`);
           created.push({
             rowNumber,
             id: created_record.id,
@@ -400,6 +412,7 @@ module.exports = () => ({
           });
         }
       } catch (err) {
+        console.error(`ConfirmFile Error fila ${rowNumber}:`, err.message, err.stack);
         errors.push({
           rowNumber,
           error: err.message,
@@ -424,5 +437,14 @@ module.exports = () => ({
       skipped,
       errors,
     };
+    } catch (error) {
+      console.error('ConfirmFile Error general:', error.message, error.stack);
+      return {
+        ok: false,
+        type: 'modelo-version-confirm',
+        error: error.message,
+        details: error.stack,
+      };
+    }
   },
 });

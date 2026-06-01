@@ -90,22 +90,29 @@ module.exports = {
       const service = strapi.service(
         'api::modelo-version-import.modelo-version-import'
       );
+      console.log('Confirm: Llamando a confirmFile...');
       const result = await service.confirmFile(fileBuffer, importToken);
+      console.log('Confirm: Result =', JSON.stringify(result).substring(0, 200));
 
       if (result.statusCode === 403) {
+        console.log('Confirm: Rechazando con 403');
         return ctx.forbidden(result.error);
       }
 
       if (!result.ok) {
+        console.log('Confirm: Error en resultado', result);
         return ctx.internalServerError(result);
       }
 
+      console.log('Confirm: Éxito, enviando resultado');
       ctx.send(result);
     } catch (error) {
+      console.error('Confirm Error:', error.message, error.stack);
       ctx.internalServerError({
         ok: false,
         type: 'modelo-version-confirm',
         error: error.message,
+        details: error.stack,
       });
     }
   },
