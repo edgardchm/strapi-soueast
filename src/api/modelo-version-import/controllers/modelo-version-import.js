@@ -36,6 +36,9 @@ module.exports = {
       }
       const fileBuffer = fs.readFileSync(file.path);
       console.log('Preview: fileBuffer size =', fileBuffer ? fileBuffer.length : 'undefined');
+      console.log('Preview: fileBuffer type =', typeof fileBuffer);
+      console.log('Preview: fileBuffer is Buffer =', Buffer.isBuffer(fileBuffer));
+      console.log('Preview: first 20 bytes =', fileBuffer.slice(0, 20).toString('hex'));
 
       console.log('Preview: Getting service...');
       const service = strapi.service('api::modelo-version-import.modelo-version-import');
@@ -80,6 +83,9 @@ module.exports = {
         return ctx.badRequest('Archivo inválido: no se encontró ruta temporal del archivo');
       }
       const fileBuffer = fs.readFileSync(file.path);
+      console.log('Confirm: fileBuffer size =', fileBuffer ? fileBuffer.length : 'undefined');
+      console.log('Confirm: fileBuffer type =', typeof fileBuffer);
+      console.log('Confirm: fileBuffer is Buffer =', Buffer.isBuffer(fileBuffer));
 
       const service = strapi.service(
         'api::modelo-version-import.modelo-version-import'
