@@ -10,4 +10,6 @@ module.exports = ({ env }) => ({
       salt: env('TRANSFER_TOKEN_SALT', 'someSalt'),
     },
   },
+  // Load admin extensions
+  autoOpen: false,
 });

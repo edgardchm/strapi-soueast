@@ -1,12 +1,6 @@
-import React from 'react';
+'use strict';
 
-const ImportExcelPage = React.lazy(() =>
-  import('./extensions/import-excel/pages/ImportExcelPage').then(module => ({
-    default: module.ImportExcelPage
-  }))
-);
-
-export default {
+module.exports = {
   config: {
     menu: {
       links: [
@@ -17,7 +11,10 @@ export default {
             id: 'import-excel.menu.label',
             defaultMessage: 'Importar Excel',
           },
-          Component: ImportExcelPage,
+          Component: async () => {
+            const { ImportExcelPage } = await import('./extensions/import-excel/pages/ImportExcelPage');
+            return ImportExcelPage;
+          },
         },
       ],
     },
