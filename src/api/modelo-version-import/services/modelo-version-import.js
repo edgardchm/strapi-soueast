@@ -121,28 +121,33 @@ module.exports = () => ({
   },
 
   async findModeloByName(modeloNombre) {
-    const entrada = await strapi
-      .service('api::modelo.modelo')
-      .find({ filters: { nombre: modeloNombre } });
+    try {
+      const entrada = await strapi.entityService.findMany('api::modelo.modelo', {
+        filters: { nombre: modeloNombre },
+      });
 
-    if (entrada.results && entrada.results.length > 0) {
-      return entrada.results[0];
-    }
+      if (entrada && entrada.length > 0) {
+        return entrada[0];
+      }
 
-    const todos = await strapi
-      .service('api::modelo.modelo')
-      .find({ pagination: { pageSize: 1000 } });
+      const todos = await strapi.entityService.findMany('api::modelo.modelo', {
+        pagination: { pageSize: 1000 },
+      });
 
-    if (todos.results && todos.results.length > 0) {
-      const normalized = modeloNombre.toLowerCase().trim();
-      for (const modelo of todos.results) {
-        if (modelo.nombre.toLowerCase().trim() === normalized) {
-          return modelo;
+      if (todos && todos.length > 0) {
+        const normalized = modeloNombre.toLowerCase().trim();
+        for (const modelo of todos) {
+          if (modelo.nombre.toLowerCase().trim() === normalized) {
+            return modelo;
+          }
         }
       }
-    }
 
-    return null;
+      return null;
+    } catch (error) {
+      console.error('Error finding modelo:', error);
+      return null;
+    }
   },
 
   async previewFile(fileBuffer) {
@@ -316,26 +321,23 @@ module.exports = () => ({
       const { data, rowNumber } = row;
 
       try {
-        const searchFilters = {
-          filters: {
-            modelo: data.modelo_id,
-            version: data.version,
-          },
-        };
+        const existing = await strapi.entityService.findMany(
+          'api::modelo-version.modelo-version',
+          {
+            filters: {
+              modelo: data.modelo_id,
+              version: data.version,
+            },
+          }
+        );
 
-        const existing = await strapi
-          .service('api::modelo-version.modelo-version')
-          .find(searchFilters);
-
-        const existingRecord =
-          existing.results && existing.results.length > 0
-            ? existing.results[0]
-            : null;
+        const existingRecord = existing && existing.length > 0 ? existing[0] : null;
 
         if (existingRecord) {
-          const updated_record = await strapi
-            .service('api::modelo-version.modelo-version')
-            .update(existingRecord.id, {
+          const updated_record = await strapi.entityService.update(
+            'api::modelo-version.modelo-version',
+            existingRecord.id,
+            {
               data: {
                 marca: data.marca,
                 modelo_nombre: data.modelo_nombre,
@@ -350,7 +352,8 @@ module.exports = () => ({
                 modelo: data.modelo_id,
                 publishedAt: new Date(),
               },
-            });
+            }
+          );
 
           updated.push({
             rowNumber,
@@ -361,9 +364,9 @@ module.exports = () => ({
             precio_final: data.precio_final,
           });
         } else {
-          const created_record = await strapi
-            .service('api::modelo-version.modelo-version')
-            .create({
+          const created_record = await strapi.entityService.create(
+            'api::modelo-version.modelo-version',
+            {
               data: {
                 marca: data.marca,
                 modelo_nombre: data.modelo_nombre,
@@ -378,7 +381,8 @@ module.exports = () => ({
                 modelo: data.modelo_id,
                 publishedAt: new Date(),
               },
-            });
+            }
+          );
 
           created.push({
             rowNumber,
