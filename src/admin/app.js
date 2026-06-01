@@ -12,8 +12,8 @@ module.exports = {
             defaultMessage: 'Importar Excel',
           },
           Component: async () => {
-            const { ImportExcelPage } = await import('./extensions/import-excel/pages/ImportExcelPage');
-            return ImportExcelPage;
+            const Module = await import('./extensions/import-excel/index.jsx');
+            return Module.default;
           },
         },
       ],
