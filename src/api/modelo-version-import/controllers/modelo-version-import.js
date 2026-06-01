@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+
 module.exports = {
   async preview(ctx) {
     try {
@@ -28,7 +30,11 @@ module.exports = {
       }
 
       console.log('Preview: Reading file...');
-      const fileBuffer = file.buffer || require('fs').readFileSync(file.path);
+      if (!file || !file.path) {
+        console.log('Preview: Archivo inválido - no se encontró ruta temporal');
+        return ctx.badRequest('Archivo inválido: no se encontró ruta temporal del archivo');
+      }
+      const fileBuffer = fs.readFileSync(file.path);
       console.log('Preview: fileBuffer size =', fileBuffer ? fileBuffer.length : 'undefined');
 
       console.log('Preview: Getting service...');
@@ -70,7 +76,10 @@ module.exports = {
       }
 
       const importToken = ctx.request.headers['x-import-token'];
-      const fileBuffer = file.buffer || require('fs').readFileSync(file.path);
+      if (!file || !file.path) {
+        return ctx.badRequest('Archivo inválido: no se encontró ruta temporal del archivo');
+      }
+      const fileBuffer = fs.readFileSync(file.path);
 
       const service = strapi.service(
         'api::modelo-version-import.modelo-version-import'
