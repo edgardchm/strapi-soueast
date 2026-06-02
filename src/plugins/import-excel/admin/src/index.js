@@ -4,19 +4,6 @@ import PluginIcon from './components/PluginIcon';
 
 export default {
   register(app) {
-    app.addMenuLink({
-      to: `/plugins/${pluginId}`,
-      icon: PluginIcon,
-      intlLabel: {
-        id: `${pluginId}.plugin.name`,
-        defaultMessage: 'Importar Excel',
-      },
-      Component: async () => {
-        const { default: ImportExcelPage } = await import('../../../../../../admin/extensions/import-excel/index.jsx');
-        return ImportExcelPage;
-      },
-    });
-
     app.registerPlugin({
       id: pluginId,
       initializer: Initializer,
@@ -25,7 +12,15 @@ export default {
     });
   },
 
-  bootstrap(app) {},
-
-  async registerTrads(app) {},
+  bootstrap(app) {
+    // Agregar menú al sidebar
+    app.addMenuLink({
+      to: '/plugins/import-excel',
+      icon: PluginIcon,
+      intlLabel: {
+        id: `${pluginId}.menu.label`,
+        defaultMessage: 'Importar Excel',
+      },
+    });
+  },
 };
