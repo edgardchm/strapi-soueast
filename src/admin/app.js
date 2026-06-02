@@ -1,6 +1,8 @@
 import React from 'react';
 
-const ImportExcelPage = React.lazy(() => import('./extensions/import-excel/index.jsx'));
+const ImportExcelPage = React.lazy(() =>
+  import('./extensions/import-excel/index.jsx')
+);
 
 export default {
   config: {
@@ -13,10 +15,16 @@ export default {
             id: 'import-excel.menu.label',
             defaultMessage: 'Importar Excel',
           },
-          Component: ImportExcelPage,
         },
       ],
     },
+    routes: [
+      {
+        path: '/admin/import-excel',
+        Component: ImportExcelPage,
+        exact: true,
+      },
+    ],
   },
-  bootstrap: () => {},
+  bootstrap() {},
 };
