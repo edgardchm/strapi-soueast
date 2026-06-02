@@ -1,38 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import UploadIcon from './extensions/UploadIcon';
+import ImportExcelPage from './extensions/import-excel/index.jsx';
 
 console.log('🔧 Importar Excel: app.js loaded');
 
-// Wrapper que carga dinámicamente el componente (sin React.lazy)
-function ImportExcelWrapper() {
-  const [Component, setComponent] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadComponent = async () => {
-      try {
-        const mod = await import('./extensions/import-excel/index.jsx');
-        setComponent(() => mod.default);
-      } catch (error) {
-        console.error('❌ Error loading ImportExcelPage:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadComponent();
-  }, []);
-
-  if (loading) {
-    return React.createElement('div', null, 'Cargando...');
-  }
-
-  if (!Component) {
-    return React.createElement('div', null, 'Error al cargar el componente');
-  }
-
-  return React.createElement(Component);
-}
+// Wrapper simple con React.memo para que Strapi lo reconozca
+const ImportExcelWrapper = React.memo(() => {
+  console.log('🔧 Importar Excel: ImportExcelWrapper rendering');
+  return React.createElement(ImportExcelPage);
+});
 
 export default {
   config: {
