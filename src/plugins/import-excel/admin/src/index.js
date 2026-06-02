@@ -1,9 +1,19 @@
 import pluginId from './pluginId';
 import Initializer from './components/Initializer';
 import PluginIcon from './components/PluginIcon';
+import { App } from './pages';
 
 export default {
   register(app) {
+    app.addMenuLink({
+      to: `/plugins/${pluginId}`,
+      icon: PluginIcon,
+      intlLabel: {
+        id: `${pluginId}.plugin.name`,
+        defaultMessage: 'Importar Excel',
+      },
+    });
+
     app.registerPlugin({
       id: pluginId,
       initializer: Initializer,
@@ -13,14 +23,10 @@ export default {
   },
 
   bootstrap(app) {
-    // Agregar menú al sidebar
-    app.addMenuLink({
-      to: '/plugins/import-excel',
-      icon: PluginIcon,
-      intlLabel: {
-        id: `${pluginId}.menu.label`,
-        defaultMessage: 'Importar Excel',
-      },
+    // Register the route for the plugin
+    app.createHref(`/plugins/${pluginId}`, {
+      title: 'Importar Excel',
+      component: App,
     });
   },
 };
