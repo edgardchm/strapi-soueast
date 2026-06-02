@@ -1,8 +1,11 @@
 import React from 'react';
 
-const ImportExcelPage = React.lazy(() =>
-  import('./extensions/import-excel/index.jsx')
-);
+console.log('🔧 Importar Excel: app.js loaded');
+
+const ImportExcelPage = React.lazy(() => {
+  console.log('🔧 Importar Excel: Loading ImportExcelPage component');
+  return import('./extensions/import-excel/index.jsx');
+});
 
 export default {
   config: {
@@ -21,10 +24,6 @@ export default {
   },
 
   bootstrap(app) {
-    // Registrar la ruta del componente
-    app.injectContentManagerComponent('listView', 'actions', {
-      name: 'import-excel-modal',
-      Component: ImportExcelPage,
-    });
+    console.log('🔧 Importar Excel: bootstrap() called');
   },
 };
