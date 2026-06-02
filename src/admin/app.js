@@ -15,24 +15,19 @@ export default {
 
   bootstrap(app) {
     console.log('🔧 Importar Excel: bootstrap() called');
-    console.log('🔧 Available app methods:', Object.keys(app));
 
     try {
-      // Intentar agregar el menú usando app.addMenuLink()
-      if (app.addMenuLink) {
-        console.log('🔧 Importar Excel: Calling app.addMenuLink()');
-        app.addMenuLink({
-          to: '/admin/import-excel',
-          icon: 'upload',
-          intlLabel: {
-            id: 'import-excel.menu.label',
-            defaultMessage: 'Importar Excel',
-          },
-        });
-        console.log('✅ Importar Excel: Menu link added successfully');
-      } else {
-        console.error('❌ Importar Excel: app.addMenuLink() is not available');
-      }
+      console.log('🔧 Importar Excel: Calling app.addMenuLink()');
+      app.addMenuLink({
+        to: '/admin/import-excel',
+        icon: 'upload',
+        intlLabel: {
+          id: 'import-excel.menu.label',
+          defaultMessage: 'Importar Excel',
+        },
+        Component: ImportExcelPage, // ✅ Agregar el componente aquí
+      });
+      console.log('✅ Importar Excel: Menu link added successfully');
     } catch (error) {
       console.error('❌ Importar Excel: Error adding menu link:', error);
     }
