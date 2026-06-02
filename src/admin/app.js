@@ -1,15 +1,30 @@
-import ImportButton from './extensions/import-excel/ImportButton';
+import React from 'react';
+
+const ImportExcelPage = React.lazy(() =>
+  import('./extensions/import-excel/index.jsx')
+);
 
 export default {
   config: {
-    tutorials: false,
-    notifications: { releases: false },
+    menu: {
+      links: [
+        {
+          to: '/admin/import-excel',
+          icon: 'upload',
+          intlLabel: {
+            id: 'import-excel.menu.label',
+            defaultMessage: 'Importar Excel',
+          },
+        },
+      ],
+    },
   },
+
   bootstrap(app) {
-    // Inyectar el botón de importación en el Content Manager
+    // Registrar la ruta del componente
     app.injectContentManagerComponent('listView', 'actions', {
-      name: 'import-excel-button',
-      Component: ImportButton,
+      name: 'import-excel-modal',
+      Component: ImportExcelPage,
     });
   },
 };
