@@ -1,0 +1,10 @@
+{
+  "name": "import-excel",
+  "version": "0.0.1",
+  "description": "Plugin para importar datos desde archivos Excel",
+  "strapi": {
+    "name": "import-excel",
+    "description": "Plugin para importar Excel",
+    "kind": "plugin"
+  }
+}
