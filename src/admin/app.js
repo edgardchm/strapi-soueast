@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import UploadIcon from './extensions/UploadIcon';
 
 console.log('🔧 Importar Excel: app.js loaded');
 
@@ -46,7 +47,7 @@ export default {
       console.log('🔧 Importar Excel: Calling app.addMenuLink()');
       app.addMenuLink({
         to: '/admin/import-excel',
-        icon: 'upload',
+        icon: UploadIcon,
         intlLabel: {
           id: 'import-excel.menu.label',
           defaultMessage: 'Importar Excel',
