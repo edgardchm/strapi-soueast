@@ -1,6 +1,5 @@
 import pluginId from './pluginId';
 import Initializer from './components/Initializer';
-import PluginIcon from './components/PluginIcon';
 
 export default {
   register(app) {
@@ -11,21 +10,24 @@ export default {
       name: 'Importar Excel',
     });
 
-    app.addMenuLink({
-      to: `/plugins/${pluginId}`,
-      icon: PluginIcon,
-      intlLabel: {
-        id: `${pluginId}.plugin.name`,
-        defaultMessage: 'Importar Excel',
-      },
-      Component: async () => {
-        const component = await import(
-          /* webpackChunkName: "import-excel" */ './pages/App'
-        );
-        return component;
-      },
-      permissions: [],
-    });
+    // Intentar agregar el menú con configuración mínima
+    try {
+      app.addMenuLink({
+        to: `/plugins/${pluginId}`,
+        icon: 'upload', // Usar string en lugar de componente
+        intlLabel: {
+          id: `${pluginId}.plugin.name`,
+          defaultMessage: 'Importar Excel',
+        },
+        Component: async () => {
+          const component = await import('./pages/App');
+          return component;
+        },
+        permissions: [],
+      });
+    } catch (error) {
+      console.error('Error registering menu link:', error);
+    }
   },
 
   bootstrap(app) {},
