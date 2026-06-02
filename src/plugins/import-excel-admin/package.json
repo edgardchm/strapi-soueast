@@ -1,0 +1,15 @@
+{
+  "name": "import-excel-admin",
+  "version": "0.0.1",
+  "description": "Admin panel plugin for Excel imports",
+  "strapi": {
+    "name": "import-excel-admin",
+    "icon": "upload",
+    "displayName": "Importar Excel",
+    "kind": "plugin"
+  },
+  "main": "./strapi-server.js",
+  "peerDependencies": {
+    "@strapi/strapi": "^4.0.0"
+  }
+}
