@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { Suspense } from 'react';
+import ImportExcelPage from './extensions/import-excel/index.jsx';
 
 console.log('🔧 Importar Excel: app.js loaded');
 
-const ImportExcelPage = React.lazy(() => {
-  console.log('🔧 Importar Excel: Loading ImportExcelPage component');
-  return import('./extensions/import-excel/index.jsx');
-});
+// Wrapper con React.memo para que Strapi lo reconozca como componente válido
+const ImportExcelWrapper = React.memo(() => (
+  <Suspense fallback={<div>Cargando...</div>}>
+    <ImportExcelPage />
+  </Suspense>
+));
+
+ImportExcelWrapper.displayName = 'ImportExcelWrapper';
 
 export default {
   config: {
@@ -25,7 +30,7 @@ export default {
           id: 'import-excel.menu.label',
           defaultMessage: 'Importar Excel',
         },
-        Component: ImportExcelPage, // ✅ Agregar el componente aquí
+        Component: ImportExcelWrapper, // ✅ Componente wrapper directo
       });
       console.log('✅ Importar Excel: Menu link added successfully');
     } catch (error) {
