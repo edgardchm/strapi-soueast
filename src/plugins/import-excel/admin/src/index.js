@@ -5,14 +5,19 @@ import { App } from './pages';
 
 export default {
   register(app) {
-    app.addMenuLink({
+    // Agregar el menú al sidebar
+    const menuItem = {
       to: `/plugins/${pluginId}`,
       icon: PluginIcon,
       intlLabel: {
         id: `${pluginId}.plugin.name`,
         defaultMessage: 'Importar Excel',
       },
-    });
+      Component: App,
+    };
+
+    // Usar el método correcto de Strapi para agregar el menú
+    app.menu.push(menuItem);
 
     app.registerPlugin({
       id: pluginId,
@@ -22,11 +27,5 @@ export default {
     });
   },
 
-  bootstrap(app) {
-    // Register the route for the plugin
-    app.createHref(`/plugins/${pluginId}`, {
-      title: 'Importar Excel',
-      component: App,
-    });
-  },
+  bootstrap() {},
 };
