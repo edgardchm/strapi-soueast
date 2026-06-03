@@ -348,10 +348,12 @@ const ImportExcelPage = () => {
             </FormGroup>
 
             <FormGroup>
-              <Label htmlFor="file">Archivo Excel</Label>
+              <Label>Archivo Excel</Label>
               <FileInputContainer>
-                <FileLabel htmlFor="file">Seleccionar archivo</FileLabel>
-                <input id="file" type="file" onChange={handleFileSelect} accept=".xlsx,.xls" disabled={loading} />
+                <FileLabel>
+                  Seleccionar archivo
+                  <input type="file" onChange={handleFileSelect} accept=".xlsx,.xls" disabled={loading} />
+                </FileLabel>
                 {selectedFile && <FileNameDisplay>{selectedFile.name}</FileNameDisplay>}
               </FileInputContainer>
             </FormGroup>
