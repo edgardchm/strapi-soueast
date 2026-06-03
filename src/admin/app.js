@@ -1,14 +1,7 @@
 import React from 'react';
 import UploadIcon from './extensions/UploadIcon';
-import ImportExcelPage from './extensions/import-excel/index.jsx';
 
 console.log('🔧 Importar Excel: app.js loaded');
-
-// Wrapper simple con React.memo para que Strapi lo reconozca
-const ImportExcelWrapper = React.memo(() => {
-  console.log('🔧 Importar Excel: ImportExcelWrapper rendering');
-  return React.createElement(ImportExcelPage);
-});
 
 export default {
   config: {
@@ -28,7 +21,11 @@ export default {
           id: 'import-excel.menu.label',
           defaultMessage: 'Importar Excel',
         },
-        Component: ImportExcelWrapper, // ✅ Componente wrapper directo
+        Component: async () => {
+          // Función async que retorna el componente (patrón requerido por Strapi)
+          const mod = await import(/* webpackChunkName: "import-excel-page" */ './extensions/import-excel/index.jsx');
+          return mod.default;
+        },
       });
       console.log('✅ Importar Excel: Menu link added successfully');
     } catch (error) {
